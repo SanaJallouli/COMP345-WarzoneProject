@@ -18,9 +18,13 @@ public:
 
 	bool Validate();
 
-	bool addContinent(Continent Con);
+	~Map();
 
-		
+	friend ostream& operator<<(ostream& strm, const Map& map);
+
+	Map(const Map& ter);
+	Map& operator=(const Map& map);
+
 
 
 };

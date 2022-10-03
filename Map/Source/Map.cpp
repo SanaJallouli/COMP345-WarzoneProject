@@ -1,9 +1,11 @@
+#pragma once 
 #include "Map.h"
 #include <iostream>
+#include "Utility_map.h"
 
 
 using namespace std;
-Map::Map(string line)
+Map::Map(string line) // creating map from the map section in the file 
 {
 
 	string Line = string(line.substr(0, line.find("\n") + 1));
@@ -16,41 +18,20 @@ Map::Map(string line)
 
 
 }
-
-
-Continent* getContinent2(std::list<Continent*> Li, string name) {
-    std::list<Continent*>::iterator it;
-    for (it = Li.begin(); it != Li.end(); ++it) {
-        if (name == *(*it)->m_name) {
-            return (*it);
-        }
-    }
-    return nullptr;
-}
-
-Territory* getTerritory2(std::list<Territory*> Li, string name) {
-    std::list<Territory*>::iterator it;
-    for (it = Li.begin(); it != Li.end(); ++it) {
-
-        if (name == *(*it)->m_name) {
-            return (*it);
-        }
-    }
-    return nullptr;
-}
-Territory* GotoNext(Territory* ter, list<Territory*> Visited_ter) {
-    std::list<Territory*>::iterator it;
-    for (it = ter->m_Connections.begin(); it != ter->m_Connections.end(); ++it) {
-
-        if (getTerritory2(Visited_ter, *(*it)->m_name) == nullptr ) {
-            return (*it);
-        }
-    }
-    return nullptr;
-}
-
-bool Map::Validate()
+Map::~Map() // destructor 
 {
+
+    delete m_author;
+    m_author = nullptr;
+
+}
+
+
+
+bool Map::Validate() 
+{
+
+    // going through the territories and checking that all of them have at least one connection  to check for a connected graph 
     std::list<Territory*>::iterator it;
     for (it = m_Territories.begin(); it != m_Territories.end(); ++it) {
 
@@ -60,20 +41,24 @@ bool Map::Validate()
     }
 
     std::list<Continent*>::iterator itCont;
-    
+    // going through the continents and checking that all of them have at least one connection  to check for a connected graph and have at least one memeber 
     for (itCont = m_Continents.begin(); itCont != m_Continents.end(); ++itCont) {
      
         if ((*itCont)->m_Connections.size() == 0) {
             return false;
         }
+        if ((*itCont)->m_Territories.size() == 0) {
+            return false;
+        }
     }
  
-     
+    // going through the territories and checking that all of them are part of one continent each
+
     for (it = m_Territories.begin(); it != m_Territories.end(); ++it) {
         int count=0;
         for (itCont = m_Continents.begin(); itCont != m_Continents.end(); ++itCont) {
 
-                if (getTerritory2((*itCont)->m_Territories, *(*it)->m_name) != nullptr) {
+                if (getTerritory((*itCont)->m_Territories, *(*it)->m_name) != nullptr) {
                     count +=1;
 
                }
@@ -90,10 +75,33 @@ bool Map::Validate()
 	return true;
 }
 
-bool Map::addContinent(Continent Con)
-{
-	return false;
+Map& Map::operator=(const Map& map) { // assign operator 
+    m_author = new string(*map.m_author);
+    m_Territories = list<Territory*>(map.m_Territories);
+    m_Continents = list<Continent*>(map.m_Continents);
+    return *this;
 }
 
 
+Map::Map(const Map& map) { // copy constructor 
+    m_author = new string(*map.m_author);
+    m_Territories = list<Territory*>(map.m_Territories);
+    m_Continents = list<Continent*>(map.m_Continents);
+}
+
+
+ostream& operator<<(ostream& strm,  const Map& map) // cout operator
+{
+    string str="";
+    string strcont="";
+
+
+    for (list<Continent*>::const_iterator itcont = (map.m_Continents).begin(); itcont != map.m_Continents.end(); ++itcont) {
+        strcont += *(*itcont)->m_name + " , ";
+    }
+    for (list<Territory*>::const_iterator  it = (map.m_Territories).begin()  ; it != map.m_Territories.end(); ++it) {
+        str += *(*it)->m_name+" , ";
+    }
+    return strm << "Author : " << *(map.m_author) << endl << " My Continents :  " << strcont << endl<< endl<< " My terrytories "<< str<<endl;
+};
 

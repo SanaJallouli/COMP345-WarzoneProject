@@ -16,9 +16,13 @@ public:
 	string* m_y;
 	string* m_continent_name;
 	list<Territory*> m_Connections; // store the continent it is connected to 
-	
-	Territory(std::string name , int num1 ,int m_num2, std::string continents);
+	~Territory();
+	Territory(const Territory& ter);
+	Territory& operator=(const Territory& ter);
 	Territory(std::string line);
 	bool AddConnection(Territory* ter);
+	friend ostream& operator<<(ostream& strm, const Territory& cont);
+
+
 
 };
