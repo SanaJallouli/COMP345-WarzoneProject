@@ -5,7 +5,7 @@
 #include "Map.h"
 #include "Cards.h"
 #include "Orders.h"
-#include "Player.h"
+#include "Player.hpp"
 #include "MapLoader.h"
 using std::cout;
 using std ::string;

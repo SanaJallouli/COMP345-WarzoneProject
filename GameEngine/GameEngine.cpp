@@ -1,6 +1,8 @@
 
 #include <iostream>
-#include "GameEngine.h"
+#include "GameEngine.hpp"
+#include "Map.h"
+
 using namespace std;
 using MMM::MapLoader;
 
