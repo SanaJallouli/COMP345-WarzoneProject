@@ -30,21 +30,18 @@ public:
 };
 class Command{
 private:
-    std::Command;
+   // std::Command;
 public:
-    setCommand(std::string);
+  //  setCommand(std::string);
 };
 class CommandProcessor {
 private:
-    std::cin<<std::pair<std::string, std::pair<std::string, std::string>>> valid_commands_and_their_transitions;
-    std::cin<<std::string> possible_valid_commands;
-    std::cin<<Command*> commands;
-    std::cin<<Command*> readCommand();
+   // std::cin<<std::pair<std::string, std::pair<std::string, std::string>>> valid_commands_and_their_transitions;
+   // std::cin<<std::string> possible_valid_commands;
+   // std::cin<<Command*> commands;
+   // std::cin<<Command*> readCommand();
 public:
     CommandProcessor();
     void getCommand(std::string);
 };
-
-
-#endif
 
