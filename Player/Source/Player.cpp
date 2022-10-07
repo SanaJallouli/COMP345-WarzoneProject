@@ -6,9 +6,9 @@
 //
 #include <iostream>
 #include "Player.hpp"
-#include "Territory.hpp"
-#include "Card.hpp"
-#include "Order.hpp"
+#include "Territory.h"
+#include "Cards.h"
+#include "Orders.h"
 #include "list"
 using namespace std;
 

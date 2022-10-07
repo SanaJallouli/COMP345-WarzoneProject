@@ -4,10 +4,10 @@
 //
 //  Created by Sana Jallouli on 2022-10-01.
 //
-#include "Territory.hpp"
+#include "Territory.h"
 #include <list>
-#include "Order.hpp"
-#include "Card.hpp"
+#include "Orders.h"
+#include "Cards.h"
 using namespace std;
 #ifndef Player_hpp
 #define Player_hpp
