@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 #include "GameEngine.hpp"
 #include "Player.hpp";
@@ -21,3 +22,18 @@ using namespace std;
 //            }
 //        
 //         }
+=======
+// ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//
+
+#include <iostream>
+#include "GameEngine.h"
+
+int testGameStates()
+{
+    GameEngine* ge=new GameEngine() ;
+    ge->manage();
+   
+}
+
+>>>>>>> 3600317 (gameengine)
