@@ -2,16 +2,15 @@
 //
 
 #include <iostream>
-#include "MapLoader.h"
+#include "Map.h"
+
 using namespace std;
-int  testLoadMaps() 
+int  main() 
 {
     MapLoader* LOADER = new MapLoader();
     LOADER->ReadDescription("scores.txt");
     LOADER->LoadMap();
-   LOADER->m_map->Validate();
-   cout <<*(LOADER->m_map);
-   
-
+    LOADER->m_map->Validate();
+    cout << *(LOADER->m_map);
 }
 
