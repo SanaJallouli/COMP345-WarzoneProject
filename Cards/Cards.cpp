@@ -361,6 +361,7 @@ Hand::Hand(const Hand& h) {
 				 break;
 			 }
 		 }
-		 return pCard;
+		 
 	 }
+	 return pCard;
  }
