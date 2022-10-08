@@ -15,18 +15,18 @@ using namespace std;
 
 list<Territory*> Player::toDefend(){
     cout<<"toDefend method working \n";
-    Territory* terr = new Territory();
+   // Territory* terr = new Territory();
     list<Territory*> randomTerr;
-    randomTerr.insert(randomTerr.begin(),terr);
+  //  randomTerr.insert(randomTerr.begin(),terr);
     return randomTerr;
 };
 
 
 list<Territory*> Player::toAttack(){
     cout<<"toAttack method working \n";
-    Territory* terr = new Territory();
+   // Territory* terr = new Territory();
     list<Territory*> randomTerr;
-    randomTerr.insert(randomTerr.begin(),terr);
+  //  randomTerr.insert(randomTerr.begin(),terr);
     return randomTerr;
 };
 
