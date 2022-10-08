@@ -7,7 +7,7 @@ using namespace std;
 void testCards() {
 	cout << "============= testCards() Start ================" << endl 
 			<< "." << endl << "." << endl;
-
+	
 	//simple deck of 5 cards, one card of each type
 	Deck deck = Deck();
 	cout << deck << endl;
@@ -52,5 +52,10 @@ void testCards() {
 
 	cout << "." << endl << "." << endl 
 		<< "============= testCards() End ================" << endl;
-		
+	
+	//pause the console
+	//system("pause");
+	/*std::cout << "Type to exit ";
+	std::string input;
+	std::cin >> input;*/
 };
