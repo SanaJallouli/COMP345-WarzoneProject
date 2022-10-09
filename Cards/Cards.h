@@ -58,3 +58,5 @@ public:
 private:
 	std::list<Card*> * pHandList;
 };
+
+void testCards();
