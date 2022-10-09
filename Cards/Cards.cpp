@@ -1,4 +1,5 @@
 #include "Cards.h"
+#include "Orders.h"
 #include <string>
 #include <time.h>
 #include <iostream>
@@ -252,7 +253,7 @@ Card* Deck::draw() {
 	cardIndex = rand() % pDeckV->size(); //random index over entire array
 	if (pDeckV->at(cardIndex) != NULL) {
 		pDeckCard = pDeckV->at(cardIndex);
-		pDeckV->erase(pDeckV->begin() + cardIndex);
+		pDeckV->erase(pDeckV->begin() + cardIndex); 
 	}
 	return pDeckCard;
 }
@@ -364,4 +365,13 @@ Hand::Hand(const Hand& h) {
 		 
 	 }
 	 return pCard;
+ }
+
+
+ void Hand::play(const char* cardType) {
+	 Order order;
+	 Card* pCard = removeCard(cardType);
+	 if (pCard != NULL) {
+		 string s = pCard->getCardTypeString();
+	 }
  }

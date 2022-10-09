@@ -55,6 +55,7 @@ public:
 
 	void addCardHand(Card* c);
 	Card* removeCard(const char* cardType);
+	void play(const char* cardType);
 private:
 	std::list<Card*> * pHandList;
 };
