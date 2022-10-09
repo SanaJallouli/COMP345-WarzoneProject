@@ -34,25 +34,19 @@ void testCards() {
     cout << "draw 5: " << *card5;
     cout << *deck << endl;
 
-    //add card1 to hand1
-    Hand * hand1 = new Hand();
-    cout << "create hand: " << endl << *hand1 << endl;
-    hand1->addCardHand(card1);
-    cout << "add card1 to hand" << endl<< *hand1 << endl;
+    //create player, add card1 to hand
+    Player* player1 = new Player("player1");
+    cout << "new " << *player1->m_name << " " << endl << *player1->hand;
+    player1->hand->addCardHand(card1);
+    cout << "add card1 to hand" << endl<< *player1->hand << endl;
 
     //add cards 2 to 5 to hand
     cout << "adding cards 2 to 5 to hand" << endl;
-    hand1->addCardHand(card2);
-    hand1->addCardHand(card3);
-    hand1->addCardHand(card4);
-    hand1->addCardHand(card5);
-    cout << *hand1 << endl;
-
-    //create player with a copy of hand1
-    Player* player1 = new Player("player1");
-    cout << *player1->m_name << " " << endl << *player1->hand;
-    player1->hand = hand1;//deep copy of hand1 performed here
-    cout << *player1->m_name << " " << endl << *player1->hand;
+    player1->hand->addCardHand(card2);
+    player1->hand->addCardHand(card3);
+    player1->hand->addCardHand(card4);
+    player1->hand->addCardHand(card5);
+    cout << *player1->hand << endl;
 
     //play each card in hand
     cout << endl << "Player1 plays bomb card:" << endl;
@@ -66,7 +60,7 @@ void testCards() {
     cout << *player1->hand << *deck;
     cout << endl << "Player1 plays airlift card:" << endl;
     player1->hand->play(pAIRLIFT, deck, player1);
-    cout << *player1->hand << *deck;
+    cout << *player1->hand << *deck;                      
     cout << endl << "Player1 plays diplomacy card:" << endl;
     player1->hand->play(pDIPLOMACY, deck, player1);
     cout << *player1->hand << *deck;
@@ -79,12 +73,6 @@ void testCards() {
         s = (*iter)->get_type();
         cout << *s << " ";
     }
-    s = nullptr;
-
-    //shows a deep copy was performed
-    cout << endl << "Player1 has :" << *player1->hand << " while original hand1 still has "
-        << endl << *hand1;
-
 
     cout << "." << endl << "." << endl
         << "============= testCards() End ================" << endl;     
