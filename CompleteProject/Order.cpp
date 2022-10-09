@@ -4,6 +4,7 @@
 Order::Order()
 {
  type_id =new int();
+ valid = new bool();
 }
 
 
