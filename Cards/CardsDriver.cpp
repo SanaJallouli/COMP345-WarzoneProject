@@ -1,4 +1,3 @@
-#include "CardsDriver.h"
 #include "Cards.h"
 #include <iostream>
 using namespace std;
@@ -52,10 +51,4 @@ void testCards() {
 
 	cout << "." << endl << "." << endl 
 		<< "============= testCards() End ================" << endl;
-	
-	//pause the console
-	//system("pause");
-	/*std::cout << "Type to exit ";
-	std::string input;
-	std::cin >> input;*/
 };
