@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Map.h"
 using namespace std;
-int  testLoadMaps() 
+void  testLoadMaps() 
 {
     MapLoader* LOADER = new MapLoader();
     LOADER->ReadDescription("scores.txt");
@@ -12,6 +12,6 @@ int  testLoadMaps()
    LOADER->m_map->Validate();
    cout <<*(LOADER->m_map);
    
-
+   //return 2;
 }
 
