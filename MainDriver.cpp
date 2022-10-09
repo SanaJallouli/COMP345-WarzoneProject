@@ -18,7 +18,7 @@ int main(){
 	//part 2: player
 
 	//part 3: order
-	//testOrdersList();
+	testOrdersList();
 
 	//card part 4
 	testCards(); 
