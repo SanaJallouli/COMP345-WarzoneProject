@@ -390,8 +390,11 @@ Hand::Hand(const Hand& h) {
              order->set_type_id(5);
              break;
          }
-         p->orders.push_back(order); //add to player's list of orders
-         cout << "order " << *order->get_type() << " created, added to player's orders." << endl;
+         //only create orders for bomb, blockade, airlift and negotiate (diplomacy card)
+         if (type > 1 && type < 6) {
+             p->orders.push_back(order); //add to player's list of orders
+             cout << "order " << *order->get_type() << " created, added to player's orders." << endl;
+         }
          d->addCardDeck(card);//add card to deck
      }
  }
