@@ -5,6 +5,8 @@
 #include <list>
 using namespace std;
 
+void testLoadMaps();
+
 class Territory
 {
 public:
