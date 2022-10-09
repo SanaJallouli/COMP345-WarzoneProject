@@ -1,4 +1,3 @@
-#pragma once 
 #include "Map.h"
 #include <iostream>
 #include <fstream>
