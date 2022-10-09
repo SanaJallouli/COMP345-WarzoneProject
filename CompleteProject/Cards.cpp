@@ -371,33 +371,28 @@ Hand::Hand(const Hand& h) {
   * \param cardType use the global const pointers: pBOMB, pREINFORCEMENT, pBLOCKADE, pAIRLIFT or pDIPLOMACY
   * \param d pointer to a Deck object
   */
- void Hand::play(const char* cardType, Deck* d){
+ void Hand::play(const char* cardType, Deck* d, Player* p){
+     order = new Order();
      Card* card = removeCard(cardType);
-    // order = new Order();
      if (card != NULL) {
-         //map card type to order
-         int type = cardToOrderType(cardType);
+         int type = cardToOrderType(cardType);//map card type to order
          switch (type) {
          case 2:
              order->set_type_id(2);
-             cout <<"order " << *order->get_type() << " created." << endl;
              break;
          case 3:
              order->set_type_id(3);
-             cout <<"order " << *order->get_type() << " created." << endl;
              break;
          case 4:
              order->set_type_id(4);
-             cout << "order " << *order->get_type() << " created." << endl;
              break;
          case 5:
              order->set_type_id(5);
-             cout << "order " << *order->get_type() << " created." << endl;
              break;
          }
-         
-         //add card back to deck
-         d->addCardDeck(card);
+         p->orders.push_back(order); //add to player's list of orders
+         cout << "order " << *order->get_type() << " created, added to player's orders." << endl;
+         d->addCardDeck(card);//add card to deck
      }
  }
 

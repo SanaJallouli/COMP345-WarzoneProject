@@ -4,6 +4,7 @@
 #include <list>
 using std::string;
 using std::ostream;
+class Player;
 
 extern const char* const pBOMB;
 extern const char* const pREINFORCEMENT;
@@ -55,7 +56,7 @@ public:
 
     void addCardHand(Card* c);
     Card* removeCard(const char* cardType);
-    void play(const char* cardType, Deck* d);
+    void play(const char* cardType, Deck* d, Player* p);
 private:
     std::list<Card*> * pHandList;
 };
