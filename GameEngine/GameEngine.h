@@ -5,6 +5,8 @@
 #include <iostream>
 using namespace std ;
 
+void testGameStates();
+
 class state {
 public:
 	state();
