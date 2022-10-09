@@ -82,7 +82,6 @@ Deploy::Deploy(const Deploy& d) : Order (d)
 }
 // assignment operator
 Deploy& Deploy::operator=(const Deploy &d){
-    Order : operator = (d);
     type = new string(*(d.type));
     return *this;
 };
@@ -117,7 +116,6 @@ string* Advance::get_type()
 }
 
 Advance& Advance::operator=(const Advance &a){
-    Order : operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -151,7 +149,6 @@ string*  Bomb::get_type()
 
 
 Bomb& Bomb::operator=(const Bomb &B){
-    Order : operator = (B);
     type = new string(*(B.type));
     return *this;
 };
@@ -182,7 +179,6 @@ string* Blockade::get_type()
 }
 
 Blockade& Blockade::operator=(const Blockade &B){
-    Order : operator = (B);
     type = new string(*(B.type));
     return *this;
 };
@@ -215,7 +211,6 @@ string* Airlift::get_type()
 }
 
 Airlift& Airlift::operator=(const Airlift &a){
-    Airlift : operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -251,7 +246,6 @@ string* Negotiate::get_type()
 
 // assignment operator
 Negotiate& Negotiate::operator=(const Negotiate &a){
-    Negotiate : operator = (a);
     type = new string(*(a.type));
     return *this;
 };
