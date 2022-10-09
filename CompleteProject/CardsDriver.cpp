@@ -1,4 +1,4 @@
-#pragma once
+#include "PLayer.hpp"
 #include "Cards.hpp"
 #include <iostream>
 using namespace std;
@@ -48,6 +48,10 @@ void testCards() {
     hand1.addCardHand(card5);
     cout << hand1 << endl;
 
+    Player player1 = Player("player1");
+    cout << *player1.m_name << " " << endl << player1.hand;
+    player1.hand = hand1;
+    cout << *player1.m_name << " " << endl << player1.hand;
 
 
     cout << "." << endl << "." << endl
