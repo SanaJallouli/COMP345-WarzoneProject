@@ -36,6 +36,7 @@ void Player::issueOrder(){
      territories = list<Territory*>(player.territories);
      cards =  list<Card*>(player.cards);
      orders = list<Order*>(player.orders);
+     hand = player.hand;
 }
 
 Player::Player(){
@@ -67,6 +68,7 @@ Player& Player::operator=(const Player &player)
    territories = list<Territory*>(player.territories);
    cards =  list<Card*>(player.cards);
    orders = list<Order*>(player.orders);
+   hand = player.hand;
    return *this;};
 
 
