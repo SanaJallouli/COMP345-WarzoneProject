@@ -36,7 +36,7 @@ void Player::issueOrder(){
      territories = list<Territory*>(player.territories);
      cards =  list<Card*>(player.cards);
      orders = list<Order*>(player.orders);
-     hand = player.hand;
+     hand = new Hand(*(player.hand));
 }
 
 Player::Player(){
@@ -46,11 +46,14 @@ Player::Player(){
 
 Player::Player(string name){
     m_name = new string(name);
+    hand = new Hand();
 }; //default constructor
 
 Player::~Player() {
     delete m_name;//deallocate
     m_name = nullptr; // avoid dangling pointers
+    delete hand;
+    hand = nullptr;
 // the other data members are lists of pointers
 // the lists are from the std so they will be deleted automatically
 // the content of the list are pointers, so the proper distructors will be called when the lists goes out of scope
@@ -68,7 +71,7 @@ Player& Player::operator=(const Player &player)
    territories = list<Territory*>(player.territories);
    cards =  list<Card*>(player.cards);
    orders = list<Order*>(player.orders);
-   hand = player.hand;
+   hand = new Hand(*(player.hand));
    return *this;};
 
 
