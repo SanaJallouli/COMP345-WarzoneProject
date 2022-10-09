@@ -21,7 +21,6 @@ public:
     Card& operator = (const Card& c);
     friend ostream& operator << (ostream& output, const Card& c);
 
-    void play();
     string &getCardTypeString();
     
 private:
@@ -55,6 +54,9 @@ public:
 
     void addCardHand(Card* c);
     Card* removeCard(const char* cardType);
+    void play(const char* cardType, Deck* d);
 private:
     std::list<Card*> * pHandList;
 };
+
+int cardToOrderType(const char* cardType);
