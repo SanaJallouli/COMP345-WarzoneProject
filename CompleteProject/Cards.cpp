@@ -269,6 +269,7 @@ void Deck::addCardDeck(Card* c) {
  */
 Hand::Hand() {
     pHandList = new std::list<Card*>();
+    order = new Order();
 }
 
 /**
@@ -277,6 +278,8 @@ Hand::Hand() {
 Hand::~Hand() {
     delete pHandList;
     pHandList = NULL;
+    delete order;
+    order = NULL;
 }
 
 /**
@@ -292,6 +295,7 @@ Hand::Hand(const Hand& h) {
             pHandList->push_back(*iter);
         }
     }
+    this->order = new Order(*(h.order));
 }
 
 /**
@@ -307,6 +311,7 @@ Hand::Hand(const Hand& h) {
              pHandList->push_back(*iter);
          }
      }
+     this->order = new Order(*(h.order));
      return *this;
 }
 
@@ -368,16 +373,28 @@ Hand::Hand(const Hand& h) {
   */
  void Hand::play(const char* cardType, Deck* d){
      Card* card = removeCard(cardType);
-     //Order order;
+    // order = new Order();
      if (card != NULL) {
          //map card type to order
-         /*int type = cardTypeInt(cardType);
+         int type = cardToOrderType(cardType);
          switch (type) {
-         case 1:
-             order.set_type_id(2);
-             cout << order << " created." << endl;
+         case 2:
+             order->set_type_id(2);
+             cout <<"order " << *order->get_type() << " created." << endl;
              break;
-         }*/
+         case 3:
+             order->set_type_id(3);
+             cout <<"order " << *order->get_type() << " created." << endl;
+             break;
+         case 4:
+             order->set_type_id(4);
+             cout << "order " << *order->get_type() << " created." << endl;
+             break;
+         case 5:
+             order->set_type_id(5);
+             cout << "order " << *order->get_type() << " created." << endl;
+             break;
+         }
          
          //add card back to deck
          d->addCardDeck(card);
@@ -386,12 +403,20 @@ Hand::Hand(const Hand& h) {
 
  //==================== free functions ===========================================
 
-
+ /**
+  * Use to create the appropriate Order given the card type.
+  * 
+  * \param cardType use global const pointers: pBOMB, pREINFORCEMENT, pBLOCKADE, pAIRLIFT or pDIPLOMACY
+  * \returns int representing Order type
+  */
  int cardToOrderType(const char* cardType){
      string s = cardType;
      int type = 0;
 
-     if(s == pBOMB) type = 2;
+     if (s == pBOMB) type = 2;
+     else if (s == pBLOCKADE) type = 3;
+     else if (s == pAIRLIFT) type = 4;
+     else if (s == pDIPLOMACY) type = 5;
 
      return type;
  }

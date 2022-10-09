@@ -48,6 +48,7 @@ public:
     Hand();
     ~Hand();
     Hand(const Hand& h);
+    Order* order;
 
     Hand& operator = (const Hand& h);
     friend ostream& operator << (ostream& output, const Hand& h);
