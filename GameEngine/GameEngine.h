@@ -1,3 +1,4 @@
+#pragma
 #include <ostream>
 #include <list>
 #include <string>

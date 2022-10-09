@@ -1,3 +1,4 @@
+#pragma
 #include <string>
 using namespace std;
 class state {
