@@ -5,6 +5,8 @@
 #include <string>
 using namespace std;
 
+void testOrdersList();
+
 class Order
 {
 public :
