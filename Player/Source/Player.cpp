@@ -6,7 +6,7 @@
 //
 #include <iostream>
 #include "Player.hpp"
-#include "Territory.h"
+#include "Map.h"
 #include "Cards.h"
 #include "Orders.h"
 #include "list"
