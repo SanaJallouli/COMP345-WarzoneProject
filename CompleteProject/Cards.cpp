@@ -8,11 +8,11 @@
 using namespace std;
                 
 //const pointer to const char[] for card creation
-extern const char* const pBOMB = "Bomb";
-extern const char* const pREINFORCEMENT = "Reinforcement";
-extern const char* const pBLOCKADE = "Blockade";
-extern const char* const pAIRLIFT = "Airlift";
-extern const char* const pDIPLOMACY = "Diplomacy";
+const char* const pBOMB = "Bomb";
+const char* const pREINFORCEMENT = "Reinforcement";
+const char* const pBLOCKADE = "Blockade";
+const char* const pAIRLIFT = "Airlift";
+const char* const pDIPLOMACY = "Diplomacy";
 
 //static cards of different types needed to create a full deck
 static Card* pCard1 (NULL);
