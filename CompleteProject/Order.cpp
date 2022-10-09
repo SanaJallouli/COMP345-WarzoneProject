@@ -89,7 +89,6 @@ Deploy& Deploy::operator=(const Deploy &d){
 
 // cout operator
 ostream& operator<<(ostream& strm, const Deploy& d) {
-      Order : operator << (strm,d);
       return strm << "TYPE : " << d.type ;
 };
 
@@ -130,7 +129,6 @@ Advance::Advance(const Advance& d) : Order (d)
 }
 // cout operator
 ostream& operator<<(ostream& strm, const Advance& a) {
-      Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 //***************BOMB ******************
@@ -165,7 +163,6 @@ Bomb::Bomb(const Bomb& d) : Order (d)
 
 // cout operator
 ostream& operator<<(ostream& strm, const Bomb& a) {
-      Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 //*************BLOCKADE *******************
@@ -198,7 +195,6 @@ Blockade::Blockade(const Blockade& d) : Order (d)
 
 // cout operator
 ostream& operator<<(ostream& strm, const Blockade& a) {
-      Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 
@@ -231,7 +227,6 @@ Airlift::Airlift(const Airlift& d) : Order (d)
 }
 // cout operator
 ostream& operator<<(ostream& strm, const Airlift& a) {
-      Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 
@@ -265,7 +260,6 @@ Negotiate& Negotiate::operator=(const Negotiate &a){
 
 // cout operator
 ostream& operator<<(ostream& strm, const Negotiate& a) {
-      Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 
