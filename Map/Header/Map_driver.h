@@ -1,2 +1,2 @@
 #pragma once
-int testLoadMaps();
+void testLoadMaps();
