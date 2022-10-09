@@ -58,7 +58,7 @@ Player::~Player() {
 
 //cout operator
 ostream& operator<<(ostream &strm, const Player& player) {
-   return strm << "Player Name " << player.m_name ;};
+   return strm << "Player Name " << *player.m_name ;};
 
 // assignment operator 
 Player& Player::operator=(const Player &player)
