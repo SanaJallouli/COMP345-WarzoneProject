@@ -2,7 +2,7 @@
 using namespace std;
 
 void testOrdersList(){
-    cout<< "******************** TEST CARDS ******************* \n" << endl;
+    cout<< "******************** TEST ORDER ******************* \n" << endl;
     OrdersList* anOrderList = new OrdersList();
 
     Deploy* deploy = new Deploy();
@@ -26,24 +26,9 @@ void testOrdersList(){
         cout <<"  "<< *((anOrderList->get_order_list().at(i))->get_type()) << endl;
     }
 
-    cout<<"\ndeleting an order :"<<endl;
-    cout<<"Enter an order to be removed"<<endl;
-    string input;
-    cin>>input;
-    bool exist=false;
-    for ( int i = 0 ; i < (anOrderList->get_order_list()).size();i++){
-        if(input ==*((anOrderList->get_order_list().at(i))->get_type())){
-            anOrderList->remove(((anOrderList->get_order_list().at(i))));
-            exist=true;
-            break;
-        }
-        
-    }
-    if(exist==false){
-        cout<<"Order is not within the orders defined !"<<endl;
-    }
-    
-    
+    //delete order
+    cout<<"\ndeleting an order :" <<endl;
+    anOrderList->remove(anOrderList->get_order_list().at(5));    
 
     //print orderlist
     cout << "\nthe orderlist contains: " << endl;
@@ -51,12 +36,10 @@ void testOrdersList(){
         cout <<"  "<< *((anOrderList->get_order_list().at(i))->get_type()) << endl;
     }
 
-    cout<<"\nmoving an order :"<<endl;
-    cout<<"Enter coordinates to move :"<<endl;
-    int coorX;
-    int coorY;
-    cout<<"X coordinate:"; cin>> coorX;
-    cout<<"\nY coordinate:"; cin>> coorY;
+    //move order
+    cout << "\nmoving order with coordinates x = 1, y = 3:" << endl;
+    int coorX = 1;
+    int coorY = 3;
     anOrderList->move(coorX,coorY);
     //print orderlist
     cout << "\nthe orderlist contains: " << endl;
