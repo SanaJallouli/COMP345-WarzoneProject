@@ -90,7 +90,6 @@ Deploy& Deploy::operator=(const Deploy &d){
 
 // cout operator
 ostream& operator<<(ostream& strm, const Deploy& d) {
-    Order : operator << (strm,d);
       return strm << "TYPE : " << d.type ;
 };
 
@@ -121,7 +120,7 @@ string* Advance::get_type()
 }
 
 Advance& Advance::operator=(const Advance &a){
-    Order : operator = (a);
+    Order :: operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -133,7 +132,6 @@ Advance::Advance(const Advance& d) : Order (d)
 }
 // cout operator
 ostream& operator<<(ostream& strm, const Advance& a) {
-    Order : operator <<(strm,a);
       return strm << "TYPE : " << a.type ;}
 
 //***************BOMB ******************
@@ -158,7 +156,7 @@ string*  Bomb::get_type()
 
 
 Bomb& Bomb::operator=(const Bomb &B){
-    Order : operator = (B);
+    Order :: operator = (B);
     type = new string(*(B.type));
     return *this;
 };
@@ -170,7 +168,7 @@ Bomb::Bomb(const Bomb& d) : Order (d)
 
 // cout operator
 ostream& operator<<(ostream& strm, const Bomb& a) {
-    Order : operator << (strm,a);
+    
       return strm << "TYPE : " << a.type ;}
 
 //*************BLOCKADE *******************
@@ -192,7 +190,7 @@ string* Blockade::get_type()
 }
 
 Blockade& Blockade::operator=(const Blockade &B){
-    Order : operator = (B);
+    Order :: operator = (B);
     type = new string(*(B.type));
     return *this;
 };
@@ -205,7 +203,7 @@ Blockade::Blockade(const Blockade& d) : Order (d)
 
 // cout operator
 ostream& operator<<(ostream& strm, const Blockade& a) {
-      Order : operator << (strm,a);
+     
       return strm << "TYPE : " << a.type ;}
 
 
@@ -228,7 +226,7 @@ string* Airlift::get_type()
 }
 
 Airlift& Airlift::operator=(const Airlift &a){
-    Order : operator = (a);
+    Order :: operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -240,7 +238,7 @@ Airlift::Airlift(const Airlift& d) : Order (d)
 }
 // cout operator
 ostream& operator<<(ostream& strm, const Airlift& a) {
-      Order : operator << (strm,a);
+  
       return strm << "TYPE : " << a.type ;}
 
 
@@ -267,7 +265,7 @@ string* Negotiate::get_type()
 
 // assignment operator
 Negotiate& Negotiate::operator=(const Negotiate &a){
-    Order : operator = (a);
+    Order :: operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -276,7 +274,6 @@ Negotiate& Negotiate::operator=(const Negotiate &a){
 
 // cout operator
 ostream& operator<<(ostream& strm, const Negotiate& a) {
-    Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 
