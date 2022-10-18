@@ -1,19 +1,20 @@
-#include "GameEngine.h"
+#include "GameEngine.hpp"
 
 
-
+// constructor
 GameEngine::GameEngine()
 {
-    state* start = new state("start");
+    State* start = new State("start");
     current_state = start;
-    state* maploaded = new state("maploaded");
-    state* mapvalidated = new state("mapvalidated");
-    state* playersadded = new state("playersadded");
-    state* assignreinforcement = new state("assignreinforcement");
-    state* issueorders = new state("issueorders");
-    state* executeorders = new state("executeorders");
-    state* win = new state("win");
+    State* maploaded = new State("maploaded");
+    State* mapvalidated = new State("mapvalidated");
+    State* playersadded = new State("playersadded");
+    State* assignreinforcement = new State("assignreinforcement");
+    State* issueorders = new State("issueorders");
+    State* executeorders = new State("executeorders");
+    State* win = new State("win");
 
+// insert the possible commands in a list corresponding to each of the states
     start->addpossible_action("loadmap", "", "");
     maploaded->addpossible_action("loadmap", "validatemap", "");
     mapvalidated->addpossible_action("addplayer", "", "");
@@ -23,7 +24,7 @@ GameEngine::GameEngine()
     executeorders->addpossible_action("execorder", "endexecorders", "win");
     win->addpossible_action("end", "play", "");
 
-
+// insert in a list the possible states achievable from each of the states
     start->addpossible_state(maploaded, nullptr, nullptr);
     maploaded->addpossible_state(maploaded, mapvalidated, nullptr);
     mapvalidated->addpossible_state(playersadded, nullptr, nullptr);
@@ -33,6 +34,7 @@ GameEngine::GameEngine()
     executeorders->addpossible_state(executeorders, win, assignreinforcement);
     win->addpossible_state(start, nullptr, nullptr);
     
+// storing all the states
     all_states.insert(all_states.begin(), start);
     all_states.insert(all_states.begin(), maploaded);
     all_states.insert(all_states.begin(), mapvalidated);
@@ -42,11 +44,11 @@ GameEngine::GameEngine()
     all_states.insert(all_states.begin(), executeorders);
     all_states.insert(all_states.begin(), win);
 
-
-
 }
-state* GameEngine::getstate(string name) {
-    std::list<state*>::iterator it;
+
+//return the state based on the command entered by user
+State* GameEngine::getstate(string name) {
+    std::list<State*>::iterator it;
     for (it = all_states.begin(); it != all_states.end(); ++it) {
 
         if (name == *(*it)->name) {
@@ -56,19 +58,13 @@ state* GameEngine::getstate(string name) {
     return nullptr;
 }
 
+
+//handle the transition from state to state depending on the commande
+
 string  GameEngine::transition(string com,string arg)
 {
-   
-
-
-
-
-
-
-
-
     if (com == "addplayer") {
-        // create player with the name arg and add it to the list of players 
+        // create player with the name arg and add it to the list of players
             string problem = "";
             if (arg == com) {
                 problem = "player name empty";
@@ -81,15 +77,11 @@ string  GameEngine::transition(string com,string arg)
             }
             else
                 return "Player cannot be added  : " + problem + "!\n";
-
-
-        
     }
 
-
     else if (com == "loadmap") {
-        // load map with arg as the path 
-        // check fi the maps was loaded or it failed : 
+        // load map with arg as the path
+        // check if the maps was loaded or it failed :
         if (arg == com ) {
             return "Map path  is empty \n";
         }
@@ -102,12 +94,10 @@ string  GameEngine::transition(string com,string arg)
             return "Map with path " + arg + " does not exist : " + problem + " \n";
     }
 
-
-
     else if (com == "validatemap") {
-        string problem = "";//will change with the return of the validate map->validate() 
+        string problem = "";//will change with the return of the validate map->validate()
         if (problem == "") {
-            current_state = getstate("playersadded");
+            current_state = getstate("mapvalidated");
             return "map  : " + arg/*map->m_name*/ + " is  valid! \n";
         }
         else
@@ -117,10 +107,10 @@ string  GameEngine::transition(string com,string arg)
 
     else if (com == "assigncountries") {
 
-        string problem = "";//will change with the return of the validate 
+        string problem = "";//will change with the return of the validate
         string final = "final"; // will be filled later when  adding territories to player
         if (problem == "") {
-            current_state = getstate("assignreinforcement"); 
+            current_state = getstate("assignreinforcement");
             return "reinforcement assigned : " + final + '\n';
         }
         else
@@ -130,7 +120,7 @@ string  GameEngine::transition(string com,string arg)
     }
     else if (com == "issueorder") {
         string problem = "";//will change with the return of the validate
-        string final = ""; // will be filled later when  adding orders 
+        string final = ""; // will be filled later when adding orders
         if (problem == "") {
             current_state = getstate("issueorders");
             return "orders issued : " + final + '\n';
@@ -146,7 +136,7 @@ string  GameEngine::transition(string com,string arg)
 
     else if (com == "execorder") {
         string problem = "";//will change with the return executing orders
-        string final = ""; // will be filled later 
+        string final = ""; // will be filled later
         if (problem == "") {
             current_state = getstate("executeorders");
             return "orders executed : " + final + "\n";
@@ -169,17 +159,21 @@ string  GameEngine::transition(string com,string arg)
     }
     else if (com == "end") {
         current_state = getstate("end");
-        return "ending the game\n";// 
+        return "end";//
     }
     else
         return "command not found please check possibilities\n";
 }
+
+//read the command from the user
 string GameEngine::getcommand()
 {
     string s;
     std::getline(std::cin, s);
     return s;
 }
+
+//validate the comand
 bool GameEngine::check_command(string s){
     if (s == "") {
         return false;
@@ -191,6 +185,7 @@ bool GameEngine::check_command(string s){
     return false;
 }
 
+// give the users the list of commands they can enter
 string  GameEngine::listPossibilities() {
     string possible="";
     for (int i = 0; i < 3; i++) {
@@ -200,10 +195,14 @@ string  GameEngine::listPossibilities() {
  
     return possible;
 }
+
+
+//the game loop
 void GameEngine::manage()
 {
     string message = "";
     while (true) {
+
         cout << "current state is : " + *current_state->name<<endl;
         cout << "possible actions are : " + listPossibilities() << endl;
         string command = getcommand();
@@ -218,11 +217,144 @@ void GameEngine::manage()
             message = transition(com, arg);
             cout << message;
         }
+        if (message == "end"){return;}
 
     }
 }
+
+// cout operator
 ostream& operator<<(ostream& strm, const GameEngine& engine)
 {
-	// TODO: insert return statement here
+    // TODO: insert return statement here
     return strm << "current state is : " << engine.current_state;
 }
+
+// copie constructor
+GameEngine::GameEngine(const GameEngine &g){
+// the current state of the game
+    current_state = new State(*(g.current_state));
+    all_states =  list<State*>(g.all_states);
+    command_list =  list<string*>(g.command_list);
+}
+
+// assignment operator
+GameEngine& GameEngine::operator=(const GameEngine &g)
+ {
+     
+    std::list<string*> command_list;
+//list of all potenetial states
+    std::list<State*> all_states;
+// the current state of the game
+    current_state = new State(*(g.current_state));
+    all_states =  list<State*>(g.all_states);
+    command_list =  list<string*>(g.command_list);
+       return *this;};
+
+
+
+// destructor
+
+GameEngine::~GameEngine(){
+    
+    delete current_state;
+    current_state= nullptr;
+    std::list<string*> command_list;
+
+    std::list<State*> all_states;
+    for (std::list<State*>::iterator it = all_states.begin(); it != all_states.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    
+    for (std::list<string*>::iterator it = command_list.begin(); it != command_list.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+
+        
+}
+
+
+//***********STATE *************
+
+State::State(string name)
+{
+    this->name = new string(name);
+    possible_action[3] = {}; // the potential transitions command it accepts
+    possible_states[3] =  {};
+}
+
+State::State()
+{
+    name = new string();
+     possible_action[3] = {}; // the potential transitions command it accepts
+     possible_states[3] =  {}; // the potential states it eventually gets to
+
+}
+// add the possible states passed as argument to the possible state array
+
+void State::addpossible_state(State* s1,State* s3,State* s2)
+{
+    this->possible_states[0] = s1;
+    this->possible_states[1] = s2;
+    this->possible_states[2] = s3;
+
+}
+
+// add the possible commands passed as argument to the possible action  array
+
+void State::addpossible_action(string s1, string s3, string s2)
+{
+    this->possible_action[0] = new string(s1);
+    this->possible_action[1] = new string(s2);
+    this->possible_action[2] = new string(s3);
+
+}
+
+// cout operator
+ostream& operator<<(ostream& strm, const State& State){
+    return strm << "current State is : " << State.name ;
+}
+
+// destructor
+State::~State(){
+    delete name;
+    name= nullptr ;
+    
+    for(int i=0; i< 3 ;i++){
+        delete possible_states[i];
+        possible_states[i]= nullptr;
+        delete possible_action[i];
+        possible_action[i]=nullptr;
+    }
+    
+}
+
+// cpy constructor
+State::State(const State &s){
+    name = new string (*(s.name));
+     possible_action[0]  = new string(*(s.possible_action[0]));
+     possible_action[1] = new string(*(s.possible_action[1]));
+     possible_action[2] = new string(*(s.possible_action[2]));
+  
+  
+  possible_states[0]  = new State(*(s. possible_states[0]));
+  possible_states[1] = new State(*(s. possible_states[1]));
+  possible_states[2] = new State(*(s. possible_states[2]));
+}
+
+// assignment operator
+State& State::operator=(const State &s)
+ {
+      name = new string (*(s.name));
+       possible_action[0]  = new string(*(s.possible_action[0]));
+       possible_action[1] = new string(*(s.possible_action[1]));
+       possible_action[2] = new string(*(s.possible_action[2]));
+    
+    
+    possible_states[0]  = new State(*(s. possible_states[0]));
+    possible_states[1] = new State(*(s. possible_states[1]));
+    possible_states[2] = new State(*(s. possible_states[2]));
+
+       return *this;};
+

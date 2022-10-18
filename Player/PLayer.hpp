@@ -1,16 +1,12 @@
-//
-//  Player.hpp
-//  comp345part2
-//
-//  Created by Sana Jallouli on 2022-10-01.
-//
-#include "Territory.hpp"
+#pragma once 
+#include "Map.hpp"
 #include <list>
+#include <iostream>
 #include "Order.hpp"
-#include "Card.hpp"
+#include "Cards.hpp"
+
 using namespace std;
-#ifndef Player_hpp
-#define Player_hpp
+
 
 #include <stdio.h>
 class Player{
@@ -20,6 +16,7 @@ class Player{
     list<Territory*> territories;
     list<Card*> cards;
     list<Order*> orders;
+    Hand* hand;
   
     
 list<Territory*> toDefend();
@@ -36,5 +33,6 @@ Player();
 ~Player();
     
 };
-#endif /* Player_hpp */
+
+
 

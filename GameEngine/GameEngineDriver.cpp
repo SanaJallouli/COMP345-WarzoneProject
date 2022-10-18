@@ -1,11 +1,11 @@
-// ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
+#pragma once
 #include <iostream>
-#include "GameEngine.h"
+#include "GameEngine.hpp"
 
-int testGameStates()
+// free function to test the game states
+void testGameStates()
 {
+    cout<< "******************** GAME ENGINE ******************* \n"<<endl;
     GameEngine* ge=new GameEngine() ;
     ge->manage();
    

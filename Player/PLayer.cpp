@@ -1,15 +1,8 @@
-//
-//  Player.cpp
-//  comp345part2
-//
-//  Created by Sana Jallouli on 2022-10-01.
-//
-#include <iostream>
+#pragma once
 #include "Player.hpp"
-#include "Territory.hpp"
-#include "Card.hpp"
+#include "Map.hpp"
+#include "Cards.hpp"
 #include "Order.hpp"
-#include "list"
 using namespace std;
 
 
@@ -43,36 +36,59 @@ void Player::issueOrder(){
      territories = list<Territory*>(player.territories);
      cards =  list<Card*>(player.cards);
      orders = list<Order*>(player.orders);
+     hand = new Hand(*(player.hand));
 }
 
 Player::Player(){
-
+    m_name = new string();
+    hand = new Hand();
+     territories = list<Territory*>();;
+     cards = list<Card*>();
+     orders= list<Order*>();
 }; //default constructor
 
 
 Player::Player(string name){
     m_name = new string(name);
-}; //default constructor
+    hand = new Hand();
+     territories = list<Territory*>();;
+     cards = list<Card*>();
+     orders= list<Order*>();
+}; // constructor
 
 Player::~Player() {
     delete m_name;//deallocate
     m_name = nullptr; // avoid dangling pointers
-// the other data members are lists of pointers
-// the lists are from the std so they will be deleted automatically
-// the content of the list are pointers, so the proper distructors will be called when the lists goes out of scope
+    delete hand;
+    hand = nullptr;
+    for (std::list<Territory*>::iterator it = territories.begin(); it != territories.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    for (std::list<Card*>::iterator it = cards.begin(); it != cards.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    for (std::list<Order*>::iterator it = orders.begin(); it != orders.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
 
 }
 
-// 
+//cout operator
 ostream& operator<<(ostream &strm, const Player& player) {
-    return strm << "Player Name " << player.m_name ;};
+   return strm << "Player Name " << *player.m_name ;};
 
+// assignment operator 
 Player& Player::operator=(const Player &player)
  {
-   m_name = new string(*player.m_name);
-   territories = list<Territory*>(player.territories);
-   cards =  list<Card*>(player.cards);
-   orders = list<Order*>(player.orders);
+  
+    this->m_name = new string(*player.m_name);
+    this-> territories = list<Territory*>(player.territories);
+    this->cards =  list<Card*>(player.cards);
+    this->orders = list<Order*>(player.orders);
+    this->hand = new Hand(*(player.hand));
    return *this;};
 
 

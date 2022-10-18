@@ -1,66 +1,326 @@
-#include "Order.h"
+#include "Order.hpp"
 
-//Order&Order ::operator = (const Order&O)
-//{
-//
-//}
 
 Order::Order()
 {
+ type_id =new int();
+ valid = new bool();
+ orderName = new string();
+    
 }
+
 
 Order::~Order()
 {
+    delete valid;
+    valid = nullptr;
+    
+    delete type_id;
+    type_id= nullptr;
+    
+    for (std::vector<string*>::iterator it = orders.begin(); it != orders.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    
+
 }
-//Order::Order(const Order& O)
-//{
-//    this->vec_type1 = *new vector<string>(O.vec_type1);
-//    this->type_id = new string(*(O.type_id));
-//}
+
+Order::Order(const Order& O)
+{
+
+    orders =  vector<string*> (O.orders);
+    type_id= new int(*O.type_id);
+    valid = new bool(*O.valid);
+    orderName = new string(* O.orderName);
+}
+
+Order& Order::operator=(const Order &O) {
+    orders =  vector<string*> (O.orders);
+    type_id= new int(*type_id);
+    valid = new bool(*O.valid);
+    orderName = new string(* O.orderName);
+    return *this;
+}
+
+ostream& operator<<(ostream& strm, const Order& O){
+    return strm << "Order : " << O.orderName ;}
+
+
 void Order::validate()
 {
     cout << "validate if the order is valid" << endl;
-    valid = true;
+    *valid = true;
 }
 
 void Order::execute()
 {
-    if (valid) {
+    if (*valid) {
         cout << "executes the action..." << endl;
     }
 }
 
 void Order::set_type_id(int num)
 {
-    type_id = num;
+    *type_id = num;
 }
 
-string Order::get_type()
+string* Order::get_type()
 {
-    return orders.at(type_id);
+    return ((orders).at(*type_id));
 }
 
 
 
+//******************** DEPLOY *******************
+Deploy::Deploy()
+{
+    cout << "deploy is creating..." << endl;
+    set_type_id(0);
+    orderName= new string("deploy");
+}
 
+Deploy::~Deploy()
+{
+    delete  type;
+    type = nullptr;
+}
+//copy constructor
+
+Deploy::Deploy(const Deploy& d) : Order (d)
+{
+    type = new string(*(d.type));
+}
+// assignment operator
+Deploy& Deploy::operator=(const Deploy &d){
+    type = new string(*(d.type));
+    return *this;
+};
+
+// cout operator
+ostream& operator<<(ostream& strm, const Deploy& d) {
+      return strm << "TYPE : " << d.type ;
+};
+
+string* Deploy::get_type()
+{
+    return type;
+}
+
+
+
+//**************ADVANCE *****************
+Advance::Advance()
+{
+    cout << "advance is creating..." << endl;
+    set_type_id(1);
+    orderName=new string("advance");
+}
+
+Advance::~Advance()
+{
+    delete  type;
+    type = nullptr;
+}
+
+string* Advance::get_type()
+{
+    return type;
+}
+
+Advance& Advance::operator=(const Advance &a){
+    Order :: operator = (a);
+    type = new string(*(a.type));
+    return *this;
+};
+
+
+Advance::Advance(const Advance& d) : Order (d)
+{
+    type = new string(*(d.type));
+}
+// cout operator
+ostream& operator<<(ostream& strm, const Advance& a) {
+      return strm << "TYPE : " << a.type ;}
+
+//***************BOMB ******************
+Bomb::Bomb()
+{
+    cout << "bomb is creating..." << endl;
+    set_type_id(2);
+    orderName=new string("bomb");
+}
+
+
+Bomb::~Bomb()
+{
+    delete  type;
+    type = nullptr;
+}
+
+string*  Bomb::get_type()
+{
+    return type;
+}
+
+
+Bomb& Bomb::operator=(const Bomb &B){
+    Order :: operator = (B);
+    type = new string(*(B.type));
+    return *this;
+};
+
+Bomb::Bomb(const Bomb& d) : Order (d)
+{
+    type = new string(*(d.type));
+}
+
+// cout operator
+ostream& operator<<(ostream& strm, const Bomb& a) {
+    
+      return strm << "TYPE : " << a.type ;}
+
+//*************BLOCKADE *******************
+Blockade::Blockade()
+{
+    cout << "blockade is creating..." << endl;
+    set_type_id(3);
+     orderName= new string("blockade");
+}
+
+Blockade::~Blockade()
+{
+    delete  type;
+    type = nullptr;
+}
+string* Blockade::get_type()
+{
+    return type;
+}
+
+Blockade& Blockade::operator=(const Blockade &B){
+    Order :: operator = (B);
+    type = new string(*(B.type));
+    return *this;
+};
+
+Blockade::Blockade(const Blockade& d) : Order (d)
+{
+    type = new string(*(d.type));
+}
+
+
+// cout operator
+ostream& operator<<(ostream& strm, const Blockade& a) {
+     
+      return strm << "TYPE : " << a.type ;}
+
+
+//**********airlift
+Airlift::Airlift()
+{
+    cout << "airlift is creating..." << endl;
+    set_type_id(4);
+    orderName= new string("airlift");
+}
+
+Airlift::~Airlift()
+{
+    delete  type;
+    type = nullptr;
+}
+string* Airlift::get_type()
+{
+    return type;
+}
+
+Airlift& Airlift::operator=(const Airlift &a){
+    Order :: operator = (a);
+    type = new string(*(a.type));
+    return *this;
+};
+
+
+Airlift::Airlift(const Airlift& d) : Order (d)
+{
+    type = new string(*(d.type));
+}
+// cout operator
+ostream& operator<<(ostream& strm, const Airlift& a) {
+  
+      return strm << "TYPE : " << a.type ;}
+
+
+
+
+//************NEGOTIATE *************
+Negotiate::Negotiate()
+{
+    cout << "negotiate is creating..." << endl;
+    set_type_id(5);
+    orderName=new string("negotiate");
+}
+
+Negotiate::~Negotiate()
+{
+    delete  type;
+    type = nullptr;
+}
+string* Negotiate::get_type()
+{
+    return type;
+}
+
+
+// assignment operator
+Negotiate& Negotiate::operator=(const Negotiate &a){
+    Order :: operator = (a);
+    type = new string(*(a.type));
+    return *this;
+};
+
+
+
+// cout operator
+ostream& operator<<(ostream& strm, const Negotiate& a) {
+      return strm << "TYPE : " << a.type ;}
+
+
+Negotiate::Negotiate(const Negotiate& d) : Order (d)
+{
+    type = new string(*(d.type));
+}
+
+
+//*************order list*********************
 
 void OrdersList::set_order_list(Order* an_order)
 {
-    vec_order_list.push_back(an_order); //add an order
+    vec_order_list.push_back(an_order);
 }
 
-vector<Order*>* OrdersList::get_order_list()
+OrdersList::OrdersList()
 {
-    return &vec_order_list;
+     vec_order_list = vector<Order*>();
+};
+
+
+OrdersList::~OrdersList()
+{
+
+};
+
+vector<Order*> OrdersList::get_order_list()
+{
+    return vec_order_list;
 }
 
 void OrdersList::remove(Order* oneOrder)
 {
     for (int i = 0; i < vec_order_list.size(); i++) {
-        if (oneOrder->get_type() == vec_order_list.at(i)->get_type()) {
-            cout << "deleting the order : " << oneOrder->get_type() << endl;
+        if (*(oneOrder->get_type()) == *(vec_order_list.at(i)->get_type())) {
+            cout << "deleting the order : " << *(oneOrder->get_type()) << endl;
             vec_order_list.erase(vec_order_list.begin() + i);
-
             return;
         }
     }
@@ -85,89 +345,22 @@ void OrdersList::move(int position, int new_position)
     }
 }
 
-Deploy::Deploy()
-{
-    cout << "deploy is creating..." << endl;
-    set_type_id(0);
-    string orderName="deploy";
-}
+// assignment operator
+OrdersList& OrdersList::operator=(const OrdersList &o){
+    vec_order_list = vector<Order*>(o.vec_order_list);
+    return *this;
+};
 
-Deploy::~Deploy()
-{
-}
 
-string* Deploy::get_type()
-{
-    return &type;
-}
+// cout operator
+ostream& operator<<(ostream& strm, const OrdersList& a) {
+  return  strm << "Orders stream insertion operator"<<endl;
+    }
 
-Advance::Advance()
-{
-    cout << "advance is creating..." << endl;
-    set_type_id(1);
-    string orderName="advance";
-}
 
-Advance::~Advance()
-{
-}
-string* Advance::get_type()
-{
-    return &type;
-}
-Bomb::Bomb()
-{
-    cout << "bomb is creating..." << endl;
-    set_type_id(2);
-    string orderName="bomb";
-}
 
-Bomb::~Bomb()
+// copy constructor
+OrdersList::OrdersList(const OrdersList& d)
 {
-}
-string* Bomb::get_type()
-{
-    return &type;
-}
-Blockade::Blockade()
-{
-    cout << "blockade is creating..." << endl;
-    set_type_id(3);
-    string orderName="blockade";
-}
-
-Blockade::~Blockade()
-{
-}
-string* Blockade::get_type()
-{
-    return &type;
-}
-Airlift::Airlift()
-{
-    cout << "airlift is creating..." << endl;
-    set_type_id(4);
-    string orderName="airlift";
-}
-
-Airlift::~Airlift()
-{
-}
-string* Airlift::get_type()
-{
-    return &type;
-}
-Negotiate::Negotiate()
-{
-    cout << "negotiate is creating..." << endl;
-    set_type_id(5);
-    string orderName="negotiate";
-}
-
-Negotiate::~Negotiate()
-{
-}
-string* Negotiate::get_type()
-{
-    return &type;
+    vec_order_list =  vector<Order*>(d.vec_order_list);
 }
