@@ -1,4 +1,4 @@
-#pragma once
+#include "PLayer.hpp"
 #include "Cards.hpp"
 #include <string>
 #include <time.h>
@@ -8,11 +8,11 @@
 using namespace std;
                 
 //const pointer to const char[] for card creation
-extern const char* const pBOMB = "Bomb";
-extern const char* const pREINFORCEMENT = "Reinforcement";
-extern const char* const pBLOCKADE = "Blockade";
-extern const char* const pAIRLIFT = "Airlift";
-extern const char* const pDIPLOMACY = "Diplomacy";
+const char* const pBOMB = "Bomb";
+const char* const pREINFORCEMENT = "Reinforcement";
+const char* const pBLOCKADE = "Blockade";
+const char* const pAIRLIFT = "Airlift";
+const char* const pDIPLOMACY = "Diplomacy";
 
 //static cards of different types needed to create a full deck
 static Card* pCard1 (NULL);
@@ -91,12 +91,6 @@ Card& Card::operator=(const Card& c) {
 ostream& operator<<(ostream& output, const Card& c) {
     if (&c != NULL) return output << "Card(" << *c.pCardTypeString << ")" << std::endl;
     else return output << "NULL" << std::endl;
-}
-
-
-void Card::play() {
-    // TODO remove card from hand and place into deck
-    // TODO create order and add to player's list of orders
 }
 
 /**
@@ -275,6 +269,7 @@ void Deck::addCardDeck(Card* c) {
  */
 Hand::Hand() {
     pHandList = new std::list<Card*>();
+    order = new Order();
 }
 
 /**
@@ -283,6 +278,8 @@ Hand::Hand() {
 Hand::~Hand() {
     delete pHandList;
     pHandList = NULL;
+    delete order;
+    order = NULL;
 }
 
 /**
@@ -298,6 +295,7 @@ Hand::Hand(const Hand& h) {
             pHandList->push_back(*iter);
         }
     }
+    this->order = new Order(*(h.order));
 }
 
 /**
@@ -313,6 +311,7 @@ Hand::Hand(const Hand& h) {
              pHandList->push_back(*iter);
          }
      }
+     this->order = new Order(*(h.order));
      return *this;
 }
 
@@ -361,8 +360,61 @@ Hand::Hand(const Hand& h) {
                  pHandList->erase(iter);
                  break;
              }
-         }
-         return pCard;
+         }         
      }
-     return nullptr;
+     return pCard;
+ }
+
+ /**
+  * Removes card pointer from the hand if it exists, creates order based on the card
+  * type, and adds the card pointer into the deck.
+  * \param cardType use the global const pointers: pBOMB, pREINFORCEMENT, pBLOCKADE, pAIRLIFT or pDIPLOMACY
+  * \param d pointer to a Deck object
+  */
+ void Hand::play(const char* cardType, Deck* d, Player* p){
+     order = new Order();
+     Card* card = removeCard(cardType);
+     if (card != NULL) {
+         int type = cardToOrderType(cardType);//map card type to order
+         switch (type) {
+         case 2:
+             order->set_type_id(2);
+             break;
+         case 3:
+             order->set_type_id(3);
+             break;
+         case 4:
+             order->set_type_id(4);
+             break;
+         case 5:
+             order->set_type_id(5);
+             break;
+         }
+         //only create orders for bomb, blockade, airlift and negotiate (diplomacy card)
+         if (type > 1 && type < 6) {
+             p->orders.push_back(order); //add to player's list of orders
+             cout << "order " << *order->get_type() << " created, added to player's orders." << endl;
+         }
+         d->addCardDeck(card);//add card to deck
+     }
+ }
+
+ //==================== free functions ===========================================
+
+ /**
+  * Use to create the appropriate Order given the card type.
+  * 
+  * \param cardType use global const pointers: pBOMB, pREINFORCEMENT, pBLOCKADE, pAIRLIFT or pDIPLOMACY
+  * \returns int representing Order type
+  */
+ int cardToOrderType(const char* cardType){
+     string s = cardType;
+     int type = 0;
+
+     if (s == pBOMB) type = 2;
+     else if (s == pBLOCKADE) type = 3;
+     else if (s == pAIRLIFT) type = 4;
+     else if (s == pDIPLOMACY) type = 5;
+
+     return type;
  }

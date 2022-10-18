@@ -4,6 +4,7 @@
 Order::Order()
 {
  type_id =new int();
+ valid = new bool();
 }
 
 
@@ -72,6 +73,8 @@ Deploy::Deploy()
 
 Deploy::~Deploy()
 {
+    delete  type;
+    type = nullptr;
 }
 //copy constructor
 
@@ -81,14 +84,12 @@ Deploy::Deploy(const Deploy& d) : Order (d)
 }
 // assignment operator
 Deploy& Deploy::operator=(const Deploy &d){
-    Order : operator = (d);
     type = new string(*(d.type));
     return *this;
 };
 
 // cout operator
 ostream& operator<<(ostream& strm, const Deploy& d) {
-      Order : operator << (strm,d);
       return strm << "TYPE : " << d.type ;
 };
 
@@ -109,6 +110,8 @@ Advance::Advance()
 
 Advance::~Advance()
 {
+    delete  type;
+    type = nullptr;
 }
 
 string* Advance::get_type()
@@ -117,7 +120,7 @@ string* Advance::get_type()
 }
 
 Advance& Advance::operator=(const Advance &a){
-    Order : operator = (a);
+    Order :: operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -129,7 +132,6 @@ Advance::Advance(const Advance& d) : Order (d)
 }
 // cout operator
 ostream& operator<<(ostream& strm, const Advance& a) {
-      Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 //***************BOMB ******************
@@ -143,6 +145,8 @@ Bomb::Bomb()
 
 Bomb::~Bomb()
 {
+    delete  type;
+    type = nullptr;
 }
 
 string*  Bomb::get_type()
@@ -152,7 +156,7 @@ string*  Bomb::get_type()
 
 
 Bomb& Bomb::operator=(const Bomb &B){
-    Order : operator = (B);
+    Order :: operator = (B);
     type = new string(*(B.type));
     return *this;
 };
@@ -164,7 +168,7 @@ Bomb::Bomb(const Bomb& d) : Order (d)
 
 // cout operator
 ostream& operator<<(ostream& strm, const Bomb& a) {
-      Order : operator << (strm,a);
+    
       return strm << "TYPE : " << a.type ;}
 
 //*************BLOCKADE *******************
@@ -177,6 +181,8 @@ Blockade::Blockade()
 
 Blockade::~Blockade()
 {
+    delete  type;
+    type = nullptr;
 }
 string* Blockade::get_type()
 {
@@ -184,7 +190,7 @@ string* Blockade::get_type()
 }
 
 Blockade& Blockade::operator=(const Blockade &B){
-    Order : operator = (B);
+    Order :: operator = (B);
     type = new string(*(B.type));
     return *this;
 };
@@ -197,7 +203,7 @@ Blockade::Blockade(const Blockade& d) : Order (d)
 
 // cout operator
 ostream& operator<<(ostream& strm, const Blockade& a) {
-      Order : operator << (strm,a);
+     
       return strm << "TYPE : " << a.type ;}
 
 
@@ -211,6 +217,8 @@ Airlift::Airlift()
 
 Airlift::~Airlift()
 {
+    delete  type;
+    type = nullptr;
 }
 string* Airlift::get_type()
 {
@@ -218,7 +226,7 @@ string* Airlift::get_type()
 }
 
 Airlift& Airlift::operator=(const Airlift &a){
-    Airlift : operator = (a);
+    Order :: operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -230,7 +238,7 @@ Airlift::Airlift(const Airlift& d) : Order (d)
 }
 // cout operator
 ostream& operator<<(ostream& strm, const Airlift& a) {
-      Order : operator << (strm,a);
+  
       return strm << "TYPE : " << a.type ;}
 
 
@@ -246,6 +254,8 @@ Negotiate::Negotiate()
 
 Negotiate::~Negotiate()
 {
+    delete  type;
+    type = nullptr;
 }
 string* Negotiate::get_type()
 {
@@ -255,7 +265,7 @@ string* Negotiate::get_type()
 
 // assignment operator
 Negotiate& Negotiate::operator=(const Negotiate &a){
-    Negotiate : operator = (a);
+    Order :: operator = (a);
     type = new string(*(a.type));
     return *this;
 };
@@ -264,7 +274,6 @@ Negotiate& Negotiate::operator=(const Negotiate &a){
 
 // cout operator
 ostream& operator<<(ostream& strm, const Negotiate& a) {
-      Order : operator << (strm,a);
       return strm << "TYPE : " << a.type ;}
 
 
@@ -287,6 +296,10 @@ OrdersList::OrdersList()
 };
 
 
+OrdersList::~OrdersList()
+{
+
+};
 
 vector<Order*> OrdersList::get_order_list()
 {

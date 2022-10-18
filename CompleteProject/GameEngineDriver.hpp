@@ -1,4 +1,4 @@
+#pragma once
 
-
-int testGameStates();
+void testGameStates();
 

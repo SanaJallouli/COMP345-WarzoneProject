@@ -4,6 +4,7 @@
 #include <list>
 using std::string;
 using std::ostream;
+class Player;
 
 extern const char* const pBOMB;
 extern const char* const pREINFORCEMENT;
@@ -21,7 +22,6 @@ public:
     Card& operator = (const Card& c);
     friend ostream& operator << (ostream& output, const Card& c);
 
-    void play();
     string &getCardTypeString();
     
 private:
@@ -49,12 +49,16 @@ public:
     Hand();
     ~Hand();
     Hand(const Hand& h);
+    Order* order;
 
     Hand& operator = (const Hand& h);
     friend ostream& operator << (ostream& output, const Hand& h);
 
     void addCardHand(Card* c);
     Card* removeCard(const char* cardType);
+    void play(const char* cardType, Deck* d, Player* p);
 private:
     std::list<Card*> * pHandList;
 };
+
+int cardToOrderType(const char* cardType);

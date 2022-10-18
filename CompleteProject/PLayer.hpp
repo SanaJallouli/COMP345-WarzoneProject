@@ -16,6 +16,7 @@ class Player{
     list<Territory*> territories;
     list<Card*> cards;
     list<Order*> orders;
+    Hand* hand;
   
     
 list<Territory*> toDefend();

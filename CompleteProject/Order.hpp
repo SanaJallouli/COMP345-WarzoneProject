@@ -12,7 +12,7 @@ public :
     
     Order();
     Order(string);
-    ~Order();
+    virtual ~Order();
     string getResult();
 
     //check of the oder is valid
@@ -47,7 +47,7 @@ class Deploy : public Order
 
 public:
     Deploy();// constructor
-    ~Deploy(); // destructor
+    virtual ~Deploy(); // destructor
   
     string* get_type();
     
@@ -67,7 +67,7 @@ private:
 class Advance : public Order {
 public:
     Advance();
-    ~Advance();
+    virtual ~Advance();
     string* get_type();
     string* type = new string( "advance" );
     
@@ -89,7 +89,7 @@ class Bomb : public Order
 {
 public:
     Bomb();
-    ~Bomb();
+    virtual ~Bomb();
     string* get_type();
     
     //copy constructor
@@ -114,7 +114,7 @@ class Blockade : public Order
 {
 public:
     Blockade();
-    ~Blockade();
+    virtual ~Blockade();
     string* get_type();
     
     
@@ -139,7 +139,7 @@ class Airlift : public Order
 {
 public:
     Airlift();
-    ~Airlift();
+    virtual ~Airlift();
     string* get_type();
     
     // assignment operator
@@ -165,7 +165,7 @@ class Negotiate : public Order
 {
 public:
     Negotiate();
-    ~Negotiate();
+   virtual ~Negotiate();
     string* get_type();
     string* type =  new string( "negotiate" );
     
@@ -190,7 +190,8 @@ class OrdersList
 public:
     
      OrdersList();
-  
+    ~OrdersList();
+
     
     void set_order_list(Order* an_order);
     vector<Order*> get_order_list();

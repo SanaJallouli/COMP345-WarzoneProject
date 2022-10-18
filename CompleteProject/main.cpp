@@ -6,9 +6,9 @@
 #include "CardsDriver.hpp"
 
 int main(int argc, const char * argv[]) {
-    testGameStates();
-     testLoadMaps();
+    testLoadMaps();
     testPlayers();
-    testCards();
     testOrdersList();
+    testCards();
+    testGameStates();
 }
