@@ -3,14 +3,21 @@
 
 using namespace std;
 
+Map::Map()
+{
+
+    m_Continents =list<Continent*>(); // list of all the continents
+   m_Territories =  std::list<Territory*>();
+   m_author = new string();
+
+}
+
 Map::Map(string line) // creating map from the map section in the file
 {
 
     string Line = string(line.substr(0, line.find("\n") + 1));
     Line = Line.substr(0, line.find("=") + 1);
     m_author = new string(line.substr(Line.length()));
-
-
 
     line = line.substr(line.find("\n") + 1);// PARSE THE REST IF NEEDED
 
@@ -22,6 +29,16 @@ Map::~Map() // destructor
     delete m_author;
     m_author = nullptr;
 
+    for (std::list<Continent*>::iterator it = m_Continents.begin(); it != m_Continents.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    
+    for (std::list<Territory*>::iterator it = m_Territories.begin(); it != m_Territories.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    
 }
 
 
@@ -111,11 +128,27 @@ Continent::~Continent() // destructor
 
     delete m_name;
     m_name = nullptr;
+    for (std::list<Continent*>::iterator it = m_Connections.begin(); it != m_Connections.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    for (std::list<Territory*>::iterator it = m_Territories.begin(); it != m_Territories.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
 }
 Continent::Continent(string line) // constructor using the line in the file
 {
     string Line = string(line.substr(0, line.find("\n") + 1));
     m_name = new string(Line.substr(0, line.find("=")));
+
+}
+
+Continent::Continent() // constructor using the line in the file
+{
+    m_Territories =  std::list<Territory*>(); // store all territories in this continent
+    m_Connections = std::list<Continent*>();
+    m_name = new string();
 
 }
 
@@ -195,6 +228,16 @@ Territory::Territory(const Territory& ter) // copy constructor
     this->m_Connections = list<Territory*>(ter.m_Connections);
 }
 
+
+Territory::Territory() // default constructor
+{
+    m_continent_name = new string();
+    m_name = new string();
+    m_x = new string();
+    m_y = new string();
+    m_Connections = list<Territory*>();
+}
+
 Territory& Territory::operator=(const Territory& ter) // assign operator
 {
     this->m_continent_name = new string(*ter.m_continent_name);
@@ -206,7 +249,6 @@ Territory& Territory::operator=(const Territory& ter) // assign operator
 }
 
 
-Territory::Territory(){};
 
 Territory::Territory(std::string line) // create a territory from a line in the territory section
 {
@@ -287,6 +329,7 @@ MapLoader::MapLoader(const MapLoader& map) { // copy contructor
 MapLoader::MapLoader() //default constructor
 {
     m_map_desc = new string();
+    m_map = new Map();
 }
 
 MapLoader::~MapLoader()// destructor

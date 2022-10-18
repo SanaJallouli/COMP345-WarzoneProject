@@ -16,6 +16,7 @@ public:
     std::list<Territory*> m_Territories;
     string* m_author;
 
+    Map();
     Map(string author);
 
     bool Validate();
@@ -80,7 +81,7 @@ public:
     string* m_name;
     std::list<Territory*> m_Territories; // store all territories in this continent
     std::list<Continent*> m_Connections; // store the continent it is connected to
-
+    Continent();
     Continent(string line);
     ~Continent();
     bool addTerritory(Territory* ter);

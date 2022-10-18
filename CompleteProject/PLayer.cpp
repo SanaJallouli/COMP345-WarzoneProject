@@ -40,23 +40,39 @@ void Player::issueOrder(){
 }
 
 Player::Player(){
-
+    m_name = new string();
+    hand = new Hand();
+     territories = list<Territory*>();;
+     cards = list<Card*>();
+     orders= list<Order*>();
 }; //default constructor
 
 
 Player::Player(string name){
     m_name = new string(name);
     hand = new Hand();
-}; //default constructor
+     territories = list<Territory*>();;
+     cards = list<Card*>();
+     orders= list<Order*>();
+}; // constructor
 
 Player::~Player() {
     delete m_name;//deallocate
     m_name = nullptr; // avoid dangling pointers
     delete hand;
     hand = nullptr;
-// the other data members are lists of pointers
-// the lists are from the std so they will be deleted automatically
-// the content of the list are pointers, so the proper distructors will be called when the lists goes out of scope
+    for (std::list<Territory*>::iterator it = territories.begin(); it != territories.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    for (std::list<Card*>::iterator it = cards.begin(); it != cards.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    for (std::list<Order*>::iterator it = orders.begin(); it != orders.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
 
 }
 
@@ -67,11 +83,12 @@ ostream& operator<<(ostream &strm, const Player& player) {
 // assignment operator 
 Player& Player::operator=(const Player &player)
  {
-   m_name = new string(*player.m_name);
-   territories = list<Territory*>(player.territories);
-   cards =  list<Card*>(player.cards);
-   orders = list<Order*>(player.orders);
-   hand = new Hand(*(player.hand));
+  
+    this->m_name = new string(*player.m_name);
+    this-> territories = list<Territory*>(player.territories);
+    this->cards =  list<Card*>(player.cards);
+    this->orders = list<Order*>(player.orders);
+    this->hand = new Hand(*(player.hand));
    return *this;};
 
 

@@ -231,14 +231,12 @@ ostream& operator<<(ostream& strm, const GameEngine& engine)
 
 // copie constructor
 GameEngine::GameEngine(const GameEngine &g){
-    std::list<string*> command_list;
-//list of all potenetial states
-    std::list<State*> all_states;
 // the current state of the game
     current_state = new State(*(g.current_state));
     all_states =  list<State*>(g.all_states);
     command_list =  list<string*>(g.command_list);
 }
+
 // assignment operator
 GameEngine& GameEngine::operator=(const GameEngine &g)
  {
@@ -260,9 +258,19 @@ GameEngine::~GameEngine(){
     
     delete current_state;
     current_state= nullptr;
-    // the other data members are lists of pointers:
-    // the list will be destroyed when out of scope
-    // and the destructors of the pointer type will be used
+    std::list<string*> command_list;
+
+    std::list<State*> all_states;
+    for (std::list<State*>::iterator it = all_states.begin(); it != all_states.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    
+    for (std::list<string*>::iterator it = command_list.begin(); it != command_list.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+
         
 }
 
@@ -272,9 +280,17 @@ GameEngine::~GameEngine(){
 State::State(string name)
 {
     this->name = new string(name);
-    
+    possible_action[3] = {}; // the potential transitions command it accepts
+    possible_states[3] =  {};
 }
 
+State::State()
+{
+    name = new string();
+     possible_action[3] = {}; // the potential transitions command it accepts
+     possible_states[3] =  {}; // the potential states it eventually gets to
+
+}
 // add the possible states passed as argument to the possible state array
 
 void State::addpossible_state(State* s1,State* s3,State* s2)
@@ -304,8 +320,14 @@ ostream& operator<<(ostream& strm, const State& State){
 State::~State(){
     delete name;
     name= nullptr ;
-    // the other data members are array of pointers :
-    // the destructor of the type of pointer will be used
+    
+    for(int i=0; i< 3 ;i++){
+        delete possible_states[i];
+        possible_states[i]= nullptr;
+        delete possible_action[i];
+        possible_action[i]=nullptr;
+    }
+    
 }
 
 // cpy constructor

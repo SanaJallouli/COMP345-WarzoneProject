@@ -5,6 +5,8 @@ Order::Order()
 {
  type_id =new int();
  valid = new bool();
+ orderName = new string();
+    
 }
 
 
@@ -15,13 +17,20 @@ Order::~Order()
     
     delete type_id;
     type_id= nullptr;
+    
+    for (std::vector<string*>::iterator it = orders.begin(); it != orders.end(); ++it) {
+        delete *it;
+        *it= nullptr;
+    }
+    
 
 }
 
 Order::Order(const Order& O)
 {
+
     orders =  vector<string*> (O.orders);
-    type_id= new int(*type_id);
+    type_id= new int(*O.type_id);
     valid = new bool(*O.valid);
     orderName = new string(* O.orderName);
 }
@@ -292,7 +301,7 @@ void OrdersList::set_order_list(Order* an_order)
 
 OrdersList::OrdersList()
 {
-
+     vec_order_list = vector<Order*>();
 };
 
 
