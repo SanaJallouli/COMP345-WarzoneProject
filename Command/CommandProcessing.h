@@ -1,3 +1,7 @@
+#ifndef COMMANDPROCESSING_H
+#define COMMANDPROCESSING_H
+
+
 #include <string>
 #include <fstream>
 #include <vector>
