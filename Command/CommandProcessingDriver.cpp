@@ -4,7 +4,7 @@
 void testCommandProcessor(){
   cout<< "TEST COMMAND PROCESSOR. \n"<<endl;
   
-    // Creating the CommandProcessor and (possibly unused) FileCommandProcessorAdapter
+    // Creating the CommandProcessor and FileCommandProcessorAdapter
     CommandProcessor *cp;
     FileCommandProcessorAdapter *fcpa;
 
