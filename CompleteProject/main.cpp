@@ -4,11 +4,10 @@
 #include "OrderDriver.hpp"
 #include "PlayerDriver.hpp"
 #include "CardsDriver.hpp"
+#include "CommandProcessing.h"
 
 int main(int argc, const char * argv[]) {
-    testLoadMaps();
-    testPlayers();
-    testOrdersList();
-    testCards();
+
+
     testGameStates();
 }

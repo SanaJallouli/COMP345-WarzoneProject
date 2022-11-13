@@ -3,30 +3,48 @@
 #include <string>
 #include <iostream>
 #include <string>
+#include "Map.hpp"
+#include "Player.hpp"
+#include "CommandProcessing.h"
+
 using namespace std ;
 class State;
 class GameEngine {
 public:
+    CommandProcessor* Cp;
     GameEngine(); // constructor
     ~GameEngine(); // distractor
-
+    Map* map;
+    Deck* deck;
 // list of all potential commands
     std::list<string*> command_list;
 //list of all potenetial states
     std::list<State*> all_states;
+    std::list<Player*> all_players;
 // the current state of the game
     State* current_state;
     
     //return the state based on the command entered by user
     State* getstate(string name);
+    string loadmap(string s);
+    string add_player(string s);
+    string Gamestart();
+    string issueOrderPhase();
+    string executeOrderPhase();
+    string transitionInGame(string com, string arg);
     //read the command from the user
     string getcommand();
     //validate the command
     bool check_command(string s);
+    void mainGameLoop();
     //the game loop
     void  manage();
     // display a list of possible commands to the user
     string listPossibilities();
+    void StartupPhase();
+    string assignArmy(Player* p);
+    void endTurnPhase();
+    string reinforcementPhase();
     // handle the transition from state to state depending on the commande
     string transition(string com, string arg);
     

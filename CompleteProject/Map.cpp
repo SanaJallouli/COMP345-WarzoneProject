@@ -43,7 +43,7 @@ Map::~Map() // destructor
 
 
 
-bool Map::Validate()
+string Map::Validate()
 {
 
     // going through the territories and checking that all of them have at least one connection  to check for a connected graph
@@ -51,7 +51,7 @@ bool Map::Validate()
     for (it = m_Territories.begin(); it != m_Territories.end(); ++it) {
 
         if ((*it)->m_Connections.size() == 0) {
-            return false;
+            return "a Territories has no connection";
         }
     }
 
@@ -60,10 +60,10 @@ bool Map::Validate()
     for (itCont = m_Continents.begin(); itCont != m_Continents.end(); ++itCont) {
 
         if ((*itCont)->m_Connections.size() == 0) {
-            return false;
+            return "a Continents has no connection";
         }
         if ((*itCont)->m_Territories.size() == 0) {
-            return false;
+            return "a continetnt has no territories";
         }
     }
 
@@ -82,12 +82,13 @@ bool Map::Validate()
         }
         if (count != 1) {
             cout << *(*it)->m_name << " has more than one or no continent " << endl;
-            return false;
+            return "a territory  has more than one continent";
+
         }
     }
 
 
-    return true;
+    return "";
 }
 
 Map& Map::operator=(const Map& map) { // assign operator
@@ -141,6 +142,9 @@ Continent::Continent(string line) // constructor using the line in the file
 {
     string Line = string(line.substr(0, line.find("\n") + 1));
     m_name = new string(Line.substr(0, line.find("=")));
+    line = line.substr(line.find("=") + 1);
+    control_val=new int(stoi(line));
+
 
 }
 
@@ -236,10 +240,12 @@ Territory::Territory() // default constructor
     m_x = new string();
     m_y = new string();
     m_Connections = list<Territory*>();
+    this->armies = new int(0);
 }
 
 Territory& Territory::operator=(const Territory& ter) // assign operator
 {
+    this->armies = new int(*ter.armies);
     this->m_continent_name = new string(*ter.m_continent_name);
     this->m_name = new string(*ter.m_name);
     this->m_x = new string(*ter.m_x);
@@ -252,6 +258,7 @@ Territory& Territory::operator=(const Territory& ter) // assign operator
 
 Territory::Territory(std::string line) // create a territory from a line in the territory section
 {
+    armies = new int(0);
     m_name = new string(line.substr(0, line.find(",")));
 
     line = line.substr(line.find(",") + 1);
@@ -274,6 +281,22 @@ bool Territory::AddConnection(Territory* ter)
     if (getTerritory(m_Connections, *ter->m_name) == nullptr) {
         m_Connections.insert(m_Connections.begin(), ter);
     }
+    return false;
+}
+
+void Territory::AddTroops(int ter)
+{
+
+    *armies=*armies +ter;
+}
+void Territory::RemoveTroops(int ter)
+{
+
+    *armies = *armies - ter;
+}
+
+bool Territory::isAdjacent(Territory* ter)
+{
     return false;
 }
 
@@ -424,6 +447,8 @@ void  MapLoader::LoadMap()
 
 
 }
+
+
 // link each territory and add it to its continent
 void  MapLoader::Link(string line) {
 
@@ -470,7 +495,7 @@ void  MapLoader::Link(string line) {
 
 
 // reading the file and putting it all in a string
-void MapLoader::ReadDescription(std::string FilePath)
+string MapLoader::ReadDescription(std::string FilePath)
 {
     string text = "";
 
@@ -481,8 +506,9 @@ void MapLoader::ReadDescription(std::string FilePath)
     // Read line
     if (!getline(input, Line)){cout<<"No file found \n";
         
-        return ;
+        return "no file found";
     };
+    text += Line + "\n";
     // until file is empty: print line, then read other line
     while (getline(input, Line)) {
 
@@ -492,17 +518,18 @@ void MapLoader::ReadDescription(std::string FilePath)
     
     if (text.find("[Continents]") == std::string::npos) {
         cout << "The file does not contain section continent ";
-        exit(0);
+        return "The file does not contain section continent ";
     }    if (text.find("[Territories]") == std::string::npos) {
         cout << "The file does not contain section Territories ";
-        exit(0);
+        return "The file does not contain section Territories ";
     }    if (text.find("[Map]") == std::string::npos) {
         cout << "The file does not contain section Map ";
-        exit(0);
+        return  "The file does not contain section Map ";
     }
     *m_map_desc = text;
 
     input.close();
+    return  "";
 
 
 }

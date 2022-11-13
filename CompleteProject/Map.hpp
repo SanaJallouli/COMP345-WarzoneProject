@@ -19,7 +19,7 @@ public:
     Map();
     Map(string author);
 
-    bool Validate();
+    string Validate();
 
     ~Map();
 
@@ -46,7 +46,7 @@ public:
     Map* m_map;
     void LoadMap();
     void Link(string Line);
-    void ReadDescription(std::string FilePath);
+    string ReadDescription(std::string FilePath);
     MapLoader& operator=(const MapLoader& map);
     MapLoader(const MapLoader& map);
     friend ostream& operator<<(ostream& strm, const MapLoader& map);
@@ -60,6 +60,8 @@ public:
     string* m_name;
     string* m_x;
     string* m_y;
+    string* player_owner;
+    int* armies;
     string* m_continent_name;
     list<Territory*> m_Connections; // store the continent it is connected to
     Territory();
@@ -68,6 +70,10 @@ public:
     Territory& operator=(const Territory& ter);
     Territory(std::string line);
     bool AddConnection(Territory* ter);
+    void AddTroops(int ter);
+    void RemoveTroops(int ter);
+    bool isAdjacent(Territory* ter);
+
     friend ostream& operator<<(ostream& strm, const Territory& cont);
 
 
@@ -79,6 +85,7 @@ class Continent
 
 public:
     string* m_name;
+    int* control_val;
     std::list<Territory*> m_Territories; // store all territories in this continent
     std::list<Continent*> m_Connections; // store the continent it is connected to
     Continent();

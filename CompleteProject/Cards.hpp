@@ -2,9 +2,11 @@
 #include <string>
 #include <vector>
 #include <list>
+
 using std::string;
 using std::ostream;
 class Player;
+class Order;
 
 extern const char* const pBOMB;
 extern const char* const pREINFORCEMENT;
@@ -57,8 +59,9 @@ public:
     void addCardHand(Card* c);
     Card* removeCard(const char* cardType);
     void play(const char* cardType, Deck* d, Player* p);
-private:
-    std::list<Card*> * pHandList;
+    std::list<Card*>* pHandList;
+
+
 };
 
 int cardToOrderType(const char* cardType);

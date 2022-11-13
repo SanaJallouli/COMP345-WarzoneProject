@@ -5,210 +5,167 @@
 #include <string>
 using namespace std;
 
+
+class Territory;
+class Player;
+
 class Order
 {
 public :
-    string* orderName;
-    
     Order();
-    Order(string);
+    Order(Player* player);
+    Order(const Order& other);
     virtual ~Order();
-    string getResult();
+    Order& operator = (const Order& other);
+    bool operator == (const Order& other);
 
-    //check of the oder is valid
-    void validate();
+
+
+    //check of the order is valid
+    virtual bool validate();
     //execute method
-    void execute();
-
+    virtual bool execute();
+    
     //set type of the subclass
     void set_type_id(int num);
-    string* get_type();
-    
-    //copy constructor
-     Order(const Order& O);
-    
-    // assignment operator
-    Order& operator=(const Order &O);
+    string get_type();
+    const Player* getPlayer();
+    void setPlayer(Player* player);
+    Player* player;
 
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const Order& order);
-    int* type_id;
+
 private :
-    bool* valid;
-    vector<string*> orders { new string("deploy"), new string("advance"), new string("bomb") , new string("blockade"), new string("airlift"), new string("negotiate")} ;
-   
-   
+    bool valid;
+    vector<string> vec_type1 = { "deploy", "advance", "bomb", "blockade", "airlift", "negotiate" };
+    int type_id;
+protected:
+    bool executed = false;
 };
-
-//********** DEPLOY ***********
 
 class Deploy : public Order
 {
 
 public:
-    Deploy();// constructor
-    virtual ~Deploy(); // destructor
-  
-    string* get_type();
-    
-    //copy constructor
-    Deploy(const Deploy& d);
-    
-    // assignment operator
-    Deploy& operator=(const Deploy &d);
+    Deploy();
+    Deploy(Player* player, Territory* territory, unsigned int numOfArmies);
+    Deploy(const Deploy& deploy);
+    ~Deploy();
+    Deploy& operator = (const Deploy& deploy);
+    virtual bool validate();
+    virtual bool execute();
+    friend ostream& operator << (std::ostream& o, const Deploy& deploy);
 
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const Deploy& order);
-    string* type = new string("deploy" );
+    string* get_type();
 private:
-   
+    Territory* territory;
+    unsigned int numOfArmaies;
+    string type1 = { "deploy" };
 };
 
 class Advance : public Order {
 public:
     Advance();
-    virtual ~Advance();
-    string* get_type();
-    string* type = new string( "advance" );
-    
-    //copy constructor
-    Advance(const Advance& d);
-  
-    Advance& operator=(const Advance &B);
-    
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const Advance& order);
+    Advance(Player* player, Territory* current, Territory* next, unsigned int numOfArmies);
+    Advance(const Advance& advance);
+    ~Advance();
+    Advance& operator = (const Advance& advance);
+    virtual bool validate();
+    virtual bool execute();
+    friend ostream& operator << (std::ostream& o, const Advance& advance);
+
 private:
-   
+    Territory* current;
+    Territory* next;
+    unsigned int numOfArmies;
 };
 
-
-
-//******************BOMB ******************
 class Bomb : public Order
 {
 public:
     Bomb();
-    virtual ~Bomb();
-    string* get_type();
-    
-    //copy constructor
-    Bomb(const Bomb& d);
-    
-    // assignment operator
-    Bomb& operator=(const Bomb &B);
-    string* type =  new string("bomb");
-    
-    
-    
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const Bomb& b);
+    Bomb(Player* player, Territory* source, Territory* target);
+    Bomb(const Bomb& bomb);
+    ~Bomb();
+    Bomb& operator = (const Bomb& bomb);
+
+    virtual bool validate();
+    virtual bool execute();
+    friend ostream& operator << (std::ostream& o, const Bomb& bomb);
+
 private:
-    
+    Territory* source;
+    Territory* target;
 };
-
-
-//***************blockade **********
 
 class Blockade : public Order
 {
 public:
     Blockade();
-    virtual ~Blockade();
-    string* get_type();
-    
-    
-    //copy constructor
-    Blockade(const Blockade& d);
-    
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const Blockade& b);
-    
-    // assignment operator
-    Blockade& operator=(const Blockade &B);
-    string* type = new string( "blockade" );
+    Blockade(Player* player, Territory* target);
+    Blockade(const Blockade& blockade);
+    ~Blockade();
+    Blockade& operator = (const Blockade& blockade);
+    virtual bool validate();
+    virtual bool execute();
+    friend ostream& operator << (std::ostream& o, const Blockade& blockade);
 private:
- 
+    Territory* target;
 };
-
-
-
-//*************AIRLIFT ************
 
 class Airlift : public Order
 {
 public:
     Airlift();
-    virtual ~Airlift();
-    string* get_type();
+    Airlift(Player* player, Territory* cuurent, Territory* next, unsigned int numOfArmies);
+    Airlift(const Airlift& airlift);
+    ~Airlift();
+    Airlift& operator = (const Airlift& airlift);
     
-    // assignment operator
-    Airlift& operator=(const Airlift &a);
-    
-    
-    //copy constructor
-    Airlift(const Airlift& d);
-    
-    
-    string* type = new string( "airlift" );
-    
-    
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const Airlift& b);
+    virtual bool validate();
+    virtual bool execute();
+    friend ostream& operator << (std::ostream& o, const Airlift& airlift);
 private:
-    
+    Territory* current;
+    Territory* next;
+    unsigned int numOfArmies;
 };
 
-
-// **************NEGOCIATE ************
 class Negotiate : public Order
 {
 public:
     Negotiate();
-   virtual ~Negotiate();
-    string* get_type();
-    string* type =  new string( "negotiate" );
-    
-    //copy constructor
-    Negotiate(const Negotiate& d);
-    
-    // assignment operator
-    Negotiate& operator=(const Negotiate &a);
-    
-    
-    
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const Negotiate& b);
+    Negotiate(Player* current, Player* enemy);
+    Negotiate(const Negotiate& negotiate);
+    ~Negotiate();
+    virtual bool validate();
+    virtual bool execute();
+    friend ostream& operator << (std::ostream& o, const Negotiate& negatiate);
+
 private:
-   
+    Player* enemy;
 };
 
-
-//*****************ORDER LIST **************
-class OrdersList
+class OrderList
 {
 public:
-    
-     OrdersList();
-    ~OrdersList();
-
-    
+    OrderList();
+    OrderList(const OrderList& orderList);
+    ~OrderList();
+    OrderList& operator = (const OrderList& orderList);
     void set_order_list(Order* an_order);
-    vector<Order*> get_order_list();
+    vector<Order*>* get_order_list();
     //delete an order
     void remove(Order* oneOrder);
     //move
     void move(int position, int new_position);
+
     
-    //copy constructor
-    OrdersList(const OrdersList& d);
-    
-    // cout operator
-    friend ostream& operator<<(ostream& strm, const OrdersList& b);
-    
-    // assignment operator
-    OrdersList& operator=(const OrdersList &O);
-    vector<Order*> vec_order_list; //store the orders
+
+    void add(Order* order);
+
+    friend ostream& operator <<(std::ostream& o, const OrderList& ol);
+
+
 private:
-    
+    vector<Order*> vec_order_list; //store the orders
 };

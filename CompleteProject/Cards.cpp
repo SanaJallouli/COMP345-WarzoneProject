@@ -244,7 +244,7 @@ Card* Deck::draw() {
     int cardIndex(0);
 
     //pick random card in deck
-    cardIndex = rand() % pDeckV->size(); //random index over entire array
+    cardIndex =1/*rand()*/ % pDeckV->size(); //random index over entire array
     if (pDeckV->at(cardIndex) != NULL) {
         pDeckCard = pDeckV->at(cardIndex);
         pDeckV->erase(pDeckV->begin() + cardIndex);
@@ -269,7 +269,7 @@ void Deck::addCardDeck(Card* c) {
  */
 Hand::Hand() {
     pHandList = new std::list<Card*>();
-    order = new Order();
+ //   order = new Order();
 }
 
 /**
@@ -295,7 +295,7 @@ Hand::Hand(const Hand& h) {
             pHandList->push_back(*iter);
         }
     }
-    this->order = new Order(*(h.order));
+  //  this->order = new Order(*(h.order));
 }
 
 /**
@@ -311,7 +311,7 @@ Hand::Hand(const Hand& h) {
              pHandList->push_back(*iter);
          }
      }
-     this->order = new Order(*(h.order));
+     //this->order = new Order(*(h.order));
      return *this;
 }
 
@@ -372,7 +372,7 @@ Hand::Hand(const Hand& h) {
   * \param d pointer to a Deck object
   */
  void Hand::play(const char* cardType, Deck* d, Player* p){
-     order = new Order();
+   //  order = new Order();
      Card* card = removeCard(cardType);
      if (card != NULL) {
          int type = cardToOrderType(cardType);//map card type to order
