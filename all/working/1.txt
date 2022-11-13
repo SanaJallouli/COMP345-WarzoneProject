@@ -1,0 +1,8 @@
+loadmap a
+validatemap
+addplayer a
+addplayer b
+gamestart
+issueorder
+deploy Cockpit01 66
+deploy Territory99a 266
