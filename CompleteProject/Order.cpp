@@ -9,12 +9,15 @@ Order::Order()
 
 }
 
-Order::Order(Player* player)
+Order::Order(Player* player, Command* c, LogObserver* l)
 {
     type_id = new int();
     valid = new bool();
     orderName = new string();
+    currentCommand = c;
     owner = player;
+    lo = l;
+    Attach(lo);
 }
 
 
@@ -32,6 +35,11 @@ Order::~Order()
     }
 
 
+}
+
+string Order::stringToLog()
+{
+    return logging;
 }
 
 Order::Order(const Order& O)
@@ -84,9 +92,10 @@ Deploy::~Deploy()
 {
     delete  type;
     type = nullptr;
+
 }
 //copy constructor
-Deploy::Deploy(Player* p,int t, Territory * Destination): Order(p)
+Deploy::Deploy(Player* p,int t, Territory * Destination,Command* c , LogObserver* l ): Order(p,c,l)
 {
     set_type_id(0);
     troops = t;
@@ -114,11 +123,15 @@ string* Deploy::get_type()
 
 bool  Deploy::validate() {
     if (*owner->armies < troops) {
-        cout << "Cannot execute order deploy from player :" << owner->m_name << " as player has less troops" << endl;
+        currentCommand->setEffect("Cannot execute order deploy from player :" + *owner->m_name + " as player has less troops");
+    
+        cout << "Cannot execute order deploy from player :" << *owner->m_name << " as player has less troops" << endl;
         return false;
     }
     bool found = (std::find(owner->territories.begin(), owner->territories.end(), Desti) != owner->territories.end());
         if (!found) {
+            currentCommand->setEffect("Cannot execute order deploy from player :" + *owner->m_name + " as player does not own territory : " + *Desti->m_name);
+
             cout << "Cannot execute order deploy from player :" << *owner->m_name << " as player does not own territory : " << *Desti->m_name<<endl;
             return false;
     }
@@ -130,6 +143,11 @@ bool  Deploy::execute() {
     if (validate()) {
         *owner->armies = *owner->armies - troops;
         *Desti->armies = *Desti->armies + troops;
+        logging = "executing the order deploy ";
+        Notify(this);
+        currentCommand->setEffect("Player " + *owner->m_name + " deployed :" + std::to_string(troops) + "  To " + *Desti->m_name);
+        cout << "Player " << *owner->m_name << " deployed :" << troops << "  To " << *Desti->m_name  << endl;
+ 
         return true;
     }
     return false;
@@ -141,7 +159,7 @@ Advance::Advance()
     set_type_id(1);
 
 }
-Advance::Advance(Player* p, Territory* Source, int t, Territory* Destination) : Order(p)
+Advance::Advance(Player* p, Territory* Source, int t, Territory* Destination,Command* c ,LogObserver* l ): Order(p,c,l)
 {
     set_type_id(1);
 
@@ -180,14 +198,20 @@ ostream& operator<<(ostream& strm, const Advance& a) {
  bool Advance::validate() {
      bool found = (std::find(owner->territories.begin(), owner->territories.end(), src) != owner->territories.end());
      if (!found) {
+         currentCommand->setEffect("Cannot execute order Advance from player :" + *owner->m_name + " as player does not own territory : " + *src->m_name  );
+
          cout << "Cannot execute order Advance from player :" << *owner->m_name << " as player does not own territory : " << *src->m_name << endl;
          return false;
      }
      if (!src->isAdjacent(Desti)) {
+         currentCommand->setEffect("Cannot execute order Advance from player :" + *owner->m_name + " as territory : " + *src->m_name + " and Territory " + *Desti->m_name + " are not adjacent");
+
          cout << "Cannot execute order Advance from player :" << *owner->m_name << " as territory : " << *src->m_name <<" and Territory "<<*Desti->m_name<<" are not adjacent"<< endl;
          return false;
      }
      if (troops>*src->armies) {
+         currentCommand->setEffect("Cannot execute order Advance from player :" + *owner->m_name + " as territory : " + *src->m_name + " have less armies than indicated ");
+
          cout << "Cannot execute order Advance from player :" << *owner->m_name << " as territory : " << *src->m_name << " have less armies than indicated "<< endl;
          return false;
      }
@@ -202,12 +226,19 @@ ostream& operator<<(ostream& strm, const Advance& a) {
 
      bool found = (std::find(owner->territories.begin(), owner->territories.end(), Desti) != owner->territories.end());
      if (found) {
+         if (getTerritory(owner->territories,*Desti->m_name) != nullptr) {
+             owner->Territory_to_attack.insert(owner->Territory_to_defend.begin(), Desti);
+
+         }else 
+             owner->Territory_to_attack.insert(owner->Territory_to_attack.begin(), Desti);
+
+
          *src->armies = *src->armies - troops;
          *Desti->armies = *Desti->armies + troops;
          return true;
      }
      *src->armies = *src->armies - troops;
-     while (troops > 0 && Desti->armies > 0)
+     while (troops > 0 && *Desti->armies > 0)
      {
          srand(time(NULL));
          if (rand() % 10 < 6)
@@ -215,17 +246,33 @@ ostream& operator<<(ostream& strm, const Advance& a) {
           if (rand() % 10 < 7)
               troops--;
      }
+     logging = "exectuting the order Advance for player  "+ *owner->m_name;
+     Notify(this);
      if (troops == 0) {
+         currentCommand->setEffect("Player " + *owner->m_name + " could not conquer Territory :" + *Desti->m_name + "and left " + std::to_string(*Desti->armies) + " units"  );
+         
          cout << "Player " << *owner->m_name << " could not conquer Territory :" << *Desti->m_name << "and left " << *Desti->armies << " units" << endl;
          return true;
      }
      else {
          /// NEEED TO CHANGE OWNERSHIP !!!!!!!! REMOVE FROM PLAYER OTHER LIST 
-         cout << "Player " << *owner->m_name << "  conquered Territory :" << *Desti->m_name << "and left " << *Desti->armies << " units" << endl;
+
+         // remove from other player list
+         //add it to owner list
+         Player* Opponent = owner->getplayer(owner->AllPlayers, *Desti->player_owner);
+
+         Opponent->RemoveTerritory(*Desti->player_owner);
+         owner->territories.insert(owner->territories.begin(), Desti);
+
+         Desti->player_owner = owner->m_name;
+         *Desti->armies = troops;
+         currentCommand->setEffect("Player " + *owner->m_name + "  conquered Territory : " + *Desti->m_name + " and left " + std::to_string(*Desti->armies) + " units");
+
+         cout << "Player " << *owner->m_name << "  conquered Territory : " << *Desti->m_name << " and left " << *Desti->armies << " units" << endl;
          *Desti->armies = troops;
          owner->recieve_card = true;
      }
-        
+
 
  
      return true;
@@ -242,7 +289,7 @@ Bomb::Bomb()
     set_type_id(2);
 
 }
-Bomb::Bomb(Player* p,  Territory* Destination) : Order(p)
+Bomb::Bomb(Player* p,  Territory* Destination,Command* c, LogObserver* l) : Order(p, c, l)
 {
     set_type_id(2);
 
@@ -282,6 +329,8 @@ ostream& operator<<(ostream& strm, const Bomb& a) {
  bool Bomb::validate() {
      bool found = (std::find(owner->territories.begin(), owner->territories.end(), Desti) != owner->territories.end());
      if (!found) {
+         currentCommand->setEffect("Cannot execute order Bomb  from player :" + *owner->m_name + " as player own territory : " + *Desti->m_name);
+
          cout << "Cannot execute order Bomb  from player :" << *owner->m_name << " as player own territory : " << *Desti->m_name << endl;
          return false;
      }
@@ -294,6 +343,8 @@ ostream& operator<<(ostream& strm, const Bomb& a) {
          }
      }
      if (isadjacent == false) {
+         currentCommand->setEffect("Cannot execute order Bomb  from player :" + *owner->m_name + " as player does not own territory that is adjacent to : " + *Desti->m_name);
+
          cout << "Cannot execute order Bomb  from player :" << *owner->m_name << " as player does not own territory that is adjacent to : " << *Desti->m_name << endl;
          return false;
      }
@@ -304,7 +355,14 @@ ostream& operator<<(ostream& strm, const Bomb& a) {
  bool Bomb::execute() {
      if (!validate())
          return false;
+
+     owner->Territory_to_defend.insert(owner->Territory_to_defend.begin(), Desti);
      *Desti->armies = *Desti->armies / 2;
+     logging = "executing the order deploy for player  "+ *owner->m_name;
+     Notify(this);
+     currentCommand->setEffect(" player :" + *owner->m_name + " Bombarrded : " + *Desti->m_name );
+     cout << " player :" << *owner->m_name << " Bombarrded : " << *Desti->m_name << " which leaves only " << *Desti->armies << " there" << endl;
+
      return true;
 }
 
@@ -315,8 +373,7 @@ Blockade::Blockade()
     set_type_id(3);
 
 }
-Blockade::Blockade(Player* p, Territory* Destination) : Order(p)
-{
+Blockade::Blockade(Player* p, Territory* Destination,Command* c, LogObserver* l) : Order(p, c, l){
     set_type_id(3);
 
     Desti = Destination;
@@ -353,6 +410,7 @@ ostream& operator<<(ostream& strm, const Blockade& a) {
  bool Blockade::validate() {
      bool found = (std::find(owner->territories.begin(), owner->territories.end(), Desti) != owner->territories.end());
      if (!found) {
+         currentCommand->setEffect("Cannot execute order Advance from player :" + *owner->m_name + " as player does not own territory : " + *Desti->m_name);
          cout << "Cannot execute order Advance from player :" << *owner->m_name << " as player does not own territory : " << *Desti->m_name << endl;
          return false;
      }
@@ -363,13 +421,13 @@ ostream& operator<<(ostream& strm, const Blockade& a) {
      if (!validate()) {
          return false;
      }
-     /// <summary>
-     /// REMOVE OWNERSHIP FOR THIS TERRITORY  
-     /// and create neutral player and add it to the list of player 
-     /// </summary>
-     /// <returns></returns>
-     
+     owner->Territory_to_defend.insert(owner->Territory_to_defend.begin(), Desti);
+
+      owner->RemoveTerritory(*Desti->player_owner);
+      owner->Neutral->territories.insert(owner->Neutral->territories.begin(), Desti);
      *Desti->armies = *Desti->armies * 2;
+     currentCommand->setEffect("blockade executed by : " + *owner->m_name + "  on  " + *Desti->m_name + " and has now "  + " and owned by neeutral");
+     cout << "blockade executed by : " << *owner->m_name << "  on  " << *Desti->m_name << " and has now " << *Desti->armies << " and owned by neeutral";
      return true;
 }
 
@@ -380,7 +438,7 @@ Airlift::Airlift()
     set_type_id(4);
 
 }
-Airlift::Airlift(Player* p, Territory* Source, int t, Territory* Destination) : Order(p)
+Airlift::Airlift(Player* p, Territory* Source, int t, Territory* Destination,Command* c, LogObserver* l) : Order(p, c, l)
 {
     set_type_id(4);
 
@@ -418,11 +476,14 @@ ostream& operator<<(ostream& strm, const Airlift& a) {
  bool Airlift::validate() {
      bool found = (std::find(owner->territories.begin(), owner->territories.end(), Desti) != owner->territories.end());
      if (!found) {
+         currentCommand->setEffect("Cannot execute order Airlift from player :" + *owner->m_name + " as player does not own territory : " + *Desti->m_name);
+    
          cout << "Cannot execute order Airlift from player :" << *owner->m_name << " as player does not own territory : " << *Desti->m_name << endl;
          return false;
      }
       found = (std::find(owner->territories.begin(), owner->territories.end(), src) != owner->territories.end());
      if (!found) {
+         currentCommand->setEffect("Cannot execute order Airlift from player :" + *owner->m_name + " as player does not own territory : "+ *src->m_name);
          cout << "Cannot execute order Airlift from player :" << *owner->m_name << " as player does not own territory : " << *src->m_name << endl;
          return false;
      }
@@ -433,8 +494,17 @@ ostream& operator<<(ostream& strm, const Airlift& a) {
      if (!validate()) {
          return false;
      }
+     owner->Territory_to_defend.insert(owner->Territory_to_defend.begin(), Desti);
+     
+     logging = "executing the order airlift for player  " + *owner->m_name;
+     Notify(this);
+
      *src->armies = *src->armies - troops;
      *Desti->armies = *Desti->armies + troops;
+     currentCommand->setEffect("executing Airlift from " + *owner->m_name + "  on " + *src->m_name + " to " + *Desti->m_name + "of " );
+
+     cout << "executing Airlift from " << *owner->m_name << "  on " << *src->m_name <<" to "<<*Desti->m_name << "of "<<troops<< endl;
+
      return true;
 }
 
@@ -447,7 +517,7 @@ Negotiate::Negotiate()
     set_type_id(5);
 
 }
-Negotiate::Negotiate(Player* p, Player* negotiated) : Order(p)
+Negotiate::Negotiate(Player* p, Player* negotiated,Command* c, LogObserver* l) : Order(p, c, l)
 {
    
     set_type_id(5);
@@ -489,14 +559,15 @@ Negotiate::Negotiate(const Negotiate& d) : Order(d)
      if (*owner->m_name != *Negotiated->m_name) {
 
          cout << "Cannot execute order Negotiate from player :" << *owner->m_name << " as player cannot negociate with himself "<< endl;
-      
+         currentCommand->setEffect("Cannot execute order Negotiate from player :" + *owner->m_name + " as player cannot negociate with himself ");
          return false;
      }
      std::list<Territory*>::iterator itCont;
      bool isadjacent = false;
-     for (itCont = Negotiated->Territory_to_attackg.begin(); itCont != Negotiated->Territory_to_attackg.end(); ++itCont) {
+     for (itCont = Negotiated->Territory_to_attack.begin(); itCont != Negotiated->Territory_to_attack.end(); ++itCont) {
          if (*owner->m_name== *(*itCont)->player_owner) {
        cout << "Cannot execute order Negotiate from player :" << *owner->m_name << " as player :  "<< *Negotiated ->m_name<<"is attacking him" << endl;
+       currentCommand->setEffect("Cannot execute order Negotiate from player :" + *owner->m_name + " as player :  " + *Negotiated->m_name + "is attacking him");
        return false;
          }
      }
@@ -508,9 +579,12 @@ Negotiate::Negotiate(const Negotiate& d) : Order(d)
      if (!validate()) {
          return false;
      }
-
+     logging = "executing the order negociate for player  " + *owner->m_name;
+     Notify(this);
      Negotiated->CannotAttack.insert(Negotiated->CannotAttack.begin(), owner);
      owner->CannotAttack.insert(owner->CannotAttack.begin(), Negotiated);
+     cout << "executing Negotiate from " << *owner->m_name << "  on " << *this->Negotiated->m_name << endl;
+     currentCommand->setEffect("executing Negotiate from " + *owner->m_name + "  on " + *this->Negotiated->m_name);
 
      return true;
 }
@@ -519,12 +593,17 @@ Negotiate::Negotiate(const Negotiate& d) : Order(d)
 
 void OrdersList::set_order_list(Order* an_order)
 {
-    vec_order_list.push_back(an_order);
+    order_list.push_back(an_order);
 }
-
+void OrdersList::addOrder(Order* an_order)
+{
+    order_list.insert(order_list.end(),an_order);
+    logging = "the following order was created <" + *an_order->orderName + "> and has been placed in the order list of player <" + *an_order->owner->m_name + ">";
+    Notify(this);
+}
 OrdersList::OrdersList()
 {
-    vec_order_list = vector<Order*>();
+    order_list = list<Order*>();
 };
 
 
@@ -533,44 +612,34 @@ OrdersList::~OrdersList()
 
 };
 
-vector<Order*> OrdersList::get_order_list()
+list<Order*> OrdersList::get_order_list()
 {
-    return vec_order_list;
+    return order_list;
 }
 
 void OrdersList::remove(Order* oneOrder)
 {
-    for (int i = 0; i < vec_order_list.size(); i++) {
-        if (*(oneOrder->get_type()) == *(vec_order_list.at(i)->get_type())) {
-            cout << "deleting the order : " << *(oneOrder->get_type()) << endl;
-            vec_order_list.erase(vec_order_list.begin() + i);
-            return;
+    std::list<Order*>::iterator it = order_list.begin();
+
+    while (it != order_list.cend())
+    {
+        list<Order*>::iterator curr = it++;
+        if ( (*curr)== oneOrder) {
+            (*curr)->execute();
+            order_list.erase(curr);
         }
     }
+
+
 }
 
-void OrdersList::move(int position, int new_position)
-{
-    if (position >= 0 && position < vec_order_list.size() && new_position >= 0 && new_position < vec_order_list.size())
-    {
-        vec_order_list.insert(vec_order_list.begin() + new_position, vec_order_list.at(position));
-        vec_order_list.erase(vec_order_list.begin() + position);
-        cout << "moved succeessfully" << endl;
-    }
-    else if (new_position == vec_order_list.size())
-    {
-        vec_order_list.push_back(vec_order_list.at(position));
-        vec_order_list.erase(vec_order_list.begin() + position);
-        cout << "moved succeessfully" << endl;
-    }
-    else {
-        cout << "not valid position" << endl;
-    }
-}
+
+
+
 
 // assignment operator
 OrdersList& OrdersList::operator=(const OrdersList& o) {
-    vec_order_list = vector<Order*>(o.vec_order_list);
+    order_list = list<Order*>(o.order_list);
     return *this;
 };
 
@@ -582,8 +651,13 @@ ostream& operator<<(ostream& strm, const OrdersList& a) {
 
 
 
+string OrdersList::stringToLog()
+{
+    return logging;
+}
+
 // copy constructor
 OrdersList::OrdersList(const OrdersList& d)
 {
-    vec_order_list = vector<Order*>(d.vec_order_list);
+    order_list = list<Order*>(d.order_list);
 }

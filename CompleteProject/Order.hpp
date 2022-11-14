@@ -5,17 +5,20 @@
 #include <string>
 #include "PLayer.hpp"
 using namespace std;
-
-class Order
+class OrdersList;
+class Order: public ILoggable ,public Subject
 {
 public:
     string* orderName;
-
+    string logging;
     Order();
-    Order(Player* player);
+    Order(Player* player,Command* c,LogObserver* lo);
+    Command* currentCommand;
     virtual ~Order();
     string getResult();
+    string stringToLog() override;
     Command* c;
+    LogObserver* lo;
     //check of the oder is valid
    virtual bool validate()=0;
     //execute method
@@ -49,7 +52,7 @@ class Deploy : public Order
 
 public:
     Deploy();// constructor
-    Deploy(Player* p,int t,Territory* Destination);// constructor
+    Deploy(Player* p,int t,Territory* Destination, Command* c, LogObserver* l);// constructor
     virtual ~Deploy(); // destructor
 
     string* get_type();
@@ -76,7 +79,7 @@ private:
 class Advance : public Order {
 public:
     Advance();
-    Advance(Player* p , Territory* Source, int t, Territory* Destination);
+    Advance(Player* p , Territory* Source, int t, Territory* Destination,Command* c, LogObserver* l);
     virtual ~Advance();
     string* get_type();
     string* type = new string("advance");
@@ -103,7 +106,7 @@ class Bomb : public Order
 {
 public:
     Bomb();
-    Bomb(Player* p, Territory* Destination);
+    Bomb(Player* p, Territory* Destination, Command* c, LogObserver* l);
     virtual ~Bomb();
     string* get_type();
     Territory* Desti;
@@ -131,7 +134,7 @@ class Blockade : public Order
 {
 public:
     Blockade();
-    Blockade(Player* p, Territory* Destination);
+    Blockade(Player* p, Territory* Destination, Command* c, LogObserver* l);
     virtual ~Blockade();
     string* get_type();
 
@@ -159,7 +162,7 @@ class Airlift : public Order
 {
 public:
     Airlift();
-    Airlift(Player* p, Territory* Source, int t, Territory* Destination);
+    Airlift(Player* p, Territory* Source, int t, Territory* Destination, Command* c, LogObserver* l);
     virtual ~Airlift();
     string* get_type();
     Territory* Desti;
@@ -193,7 +196,7 @@ public:
     virtual ~Negotiate();
     string* get_type();
     string* type = new string("negotiate");
-    Negotiate(Player* p, Player* negociated);
+    Negotiate(Player* p, Player* negociated, Command* c, LogObserver* l);
     
     //copy constructor
     Negotiate(const Negotiate& d);
@@ -213,7 +216,7 @@ private:
 
 
 //*****************ORDER LIST **************
-class OrdersList
+class OrdersList :public ILoggable, public Subject
 {
 public:
 
@@ -222,12 +225,14 @@ public:
 
 
     void set_order_list(Order* an_order);
-    vector<Order*> get_order_list();
+    void addOrder(Order* an_order);
+    list<Order*> get_order_list();
     //delete an order
     void remove(Order* oneOrder);
     //move
     void move(int position, int new_position);
-
+    string logging;
+    string stringToLog() override;
     //copy constructor
     OrdersList(const OrdersList& d);
 
@@ -236,7 +241,7 @@ public:
 
     // assignment operator
     OrdersList& operator=(const OrdersList& O);
-    vector<Order*> vec_order_list; //store the orders
+    list<Order*> order_list; //store the orders
 private:
 
 };

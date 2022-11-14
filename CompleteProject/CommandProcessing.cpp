@@ -8,8 +8,12 @@ using namespace std;
 Command::Command() {
 
 }
-Command::Command(string s) {
+
+
+Command::Command(string s,LogObserver* l ) {
     command = s;
+    lo = l;
+    Attach(lo);
 }
 Command::~Command()
 {
@@ -27,7 +31,6 @@ Command& Command::operator=(const Command& g)
     command = g.command;
     effect = g.effect;
 
-    // TODO: insert return statement here
     return     *this;;
 }
 
@@ -37,7 +40,9 @@ void Command::setCommand(std::string command1) {
 }
 
 void Command::setEffect(std::string effect1){
+
     effect = effect1;
+    Notify(this);
 }
 
 string Command::getCommand(){
@@ -48,6 +53,11 @@ string Command::getEffect(){
     return effect;
 }
 
+string Command::stringToLog()
+{
+    return "the command : <"+getCommand()+"> was set with the following effect <"+getEffect()+">";
+}
+
 
 
 
@@ -55,8 +65,13 @@ string Command::getEffect(){
 
 //validate if the command can be done or not 
 
-CommandProcessor::CommandProcessor(){
-    possible_valid_commands_vector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" };
+string CommandProcessor::stringToLog()
+{
+    return "this command : <"+commands_vector.back()->getCommand()+"> was saved to the command vector";
+}
+
+CommandProcessor::CommandProcessor(LogObserver* l) {   lo = l;
+    possible_valid_commands_vector = { "loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit" ,"deploy","advance","negotiate","bomb","airlift","issueorders","execorder","end"};
     valid_commands_and_their_transitions_vector.emplace_back("start", make_pair("loadmap", "maploaded"));
     valid_commands_and_their_transitions_vector.emplace_back("maploaded", make_pair("loadmap", "maploaded"));
     valid_commands_and_their_transitions_vector.emplace_back("maploaded", make_pair("validatemap", "mapvalidated"));
@@ -71,11 +86,11 @@ CommandProcessor::CommandProcessor(){
     valid_commands_and_their_transitions_vector.emplace_back("executeorders", make_pair("win", "win"));
     valid_commands_and_their_transitions_vector.emplace_back("win", make_pair("replay", "start"));
     valid_commands_and_their_transitions_vector.emplace_back("win", make_pair("quit", "exit program"));
-
+    Attach(l);
 }
 
 void CommandProcessor::readCommand() {
-    /*
+    
     string temp_str;
     cout << "Please enter commands one after the other. When you are finished please enter in all caps \"END\"" << endl;
     while(true){
@@ -93,15 +108,14 @@ void CommandProcessor::readCommand() {
         else {
             cout << "The command that you entered was an invalid command. Please enter another command or type \"END\" once finished." << endl;
         }
-    }*/
-    FileLineReader f=FileLineReader();
-    this->commands_vector = f.readLineFromFile("C:\\Users\\bechr\\Documents\\GitHub\\COMP345-WarzoneProject\\all\\working\\1.txt");
+    }
+
 
 }
 
 
 
-Command CommandProcessor::getCommand(){
+Command* CommandProcessor::getCommand(){
   
     if (index == commands_vector.size()) {
         readCommand();
@@ -109,7 +123,8 @@ Command CommandProcessor::getCommand(){
     index++;
     if (index > commands_vector.size())
         exit(0);
-    return *commands_vector[index-1];
+    std::cout << commands_vector[index - 1]->getCommand() << endl;
+    return commands_vector[index-1];
 
 }
 
@@ -138,46 +153,59 @@ std::string CommandProcessor::validate(Command* command1, std::string state )
 }
 
 void CommandProcessor::saveCommand(string c) {
-    commands_vector.insert(commands_vector.end(), new Command(c));
+    
+    commands_vector.insert(commands_vector.end(), new Command(c,lo));
+    Notify(this);
 }
 
 
+FileLineReader::FileLineReader()
+{
 
-
-
-
-
-/*
-
-std::vector<Command*> FileCommandProcessorAdapter::readCommand(std::string filename) {
-    std::vector<Command*> final_commands;
-    possible_valid_commands_vector = {"loadmap", "validatemap", "addplayer", "gamestart", "replay", "quit"};
-    std::vector<std::string> potential_commands = readLineFromFile(filename);
-
-    //validating that the commands are correct before returning them to the CommandProcessor, otherwise, skipping the item
-  
-    for(std::string str: potential_commands){
-        if (find(possible_valid_commands_vector.begin(), possible_valid_commands_vector.end(), str) != possible_valid_commands_vector.end()){
-            final_commands.insert(final_commands.end(),new Command(str));
-            std::cout << "Command \"" << str << "\" was valid. It has been successfully entered." << std::endl;
-        }
-        else{
-            std::cout << "Command \"" << str << "\" was not valid. It will be skipped" << std::endl;
-        }
-    }
-    return final_commands;
 }
 
-*/
-
-std::vector<Command*> FileLineReader::readLineFromFile(const std::string& filename) {
+void FileLineReader::readAllFile(string filename,LogObserver* l) {
     std::vector<Command*> local_commands_vector;
     std::ifstream infile(filename);
     std::string line;
-    while(std::getline(infile, line)){
-
-        local_commands_vector.insert(local_commands_vector.end(), new Command(line));
+    while (std::getline(infile, line)) {
+        
+        commands.insert(commands.end(), new Command(line,l));
     }
- 
-    return local_commands_vector;
 }
+
+Command* FileLineReader::getNextCommand(string filename, LogObserver* l)
+{
+    if (index == 0) { 
+        readAllFile(filename,l );
+    }
+    index++;
+    if (index == commands.size()) {
+        cout << "There are no more commands to play the program will exit" << endl;
+        exit(1);
+        return nullptr;
+    }
+    return commands[index - 1];
+}
+
+
+CommandProcessorAdapter::CommandProcessorAdapter(FileLineReader* f,string fl,LogObserver* l):CommandProcessor(l) {
+    Fl = f;
+    filename = fl;
+}
+void CommandProcessorAdapter::readCommand()
+{
+    string temp_str= (*Fl).getNextCommand(filename,lo)->getCommand();
+    string com = string(temp_str.substr(0, temp_str.find(" ")));
+    if (find(possible_valid_commands_vector.begin(), possible_valid_commands_vector.end(), com) != possible_valid_commands_vector.end()) {
+        saveCommand(temp_str);
+        cout << "Valid command. Successfully entered." << endl;
+    }
+    else {
+        cout << "The command that you entered was an invalid command. Please enter another command or type \"END\" once finished." << endl;
+    } 
+}
+
+
+
+

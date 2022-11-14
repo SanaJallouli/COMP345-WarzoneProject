@@ -3,6 +3,15 @@ validatemap
 addplayer a
 addplayer b
 gamestart
-issueorder
+issueorders
 deploy Cockpit01 66
 deploy Territory99a 266
+end
+airlift Territory99a 50 Cockpit03
+execorder
+issueorders
+deploy Territory39 16
+deploy Territory99a 216
+end
+advance Territory99a 55 Territory39
+execorder

@@ -9,26 +9,33 @@
 
 
 using namespace std;
-
+class OrdersList;
 #include <stdio.h>
 class Player{
     
     public :
+        LogObserver* lo;
+        Command* currentCommand;
         CommandProcessor* cP;
     string* m_name;
     list<Territory*> territories;
     list<Card*> cards;
-    list<Order*> orders;
+
     Hand* hand;
     int* armies;
     int* deployed_inTurn;
     int* player_order;
 list<Territory*> toDefend();
 list<Territory*> toAttack();
+void RemoveTerritory(string teri_name);
+Player* getplayer(list<Player*> l, string card_name);
+std::list<Territory*> getAllTerritories(list<Player*> l);
 list<Player*> CannotAttack;
 list<Player*> AllPlayers;
-
-list<Territory*> Territory_to_attackg;
+Player* Neutral;
+OrdersList* orders ;
+list<Territory*> Territory_to_attack;
+list<Territory*> Territory_to_defend;
 bool recieve_card = false;
 
 bool issueOrder();

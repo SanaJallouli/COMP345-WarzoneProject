@@ -6,8 +6,8 @@
 #include <fstream>
 #include <vector>
 #include <list>
-
-class Command {
+#include "LoggingObserver.h"
+class Command: public ILoggable , public Subject {
 private:
     std::string command;
     std::string effect;
@@ -16,52 +16,62 @@ public:
     void setEffect(std::string effect1);
     std::string getCommand();
     std::string getEffect();
+    string logging;
+    string stringToLog() override;
+    LogObserver* lo;
 
     Command();
-    Command(string s);
+    Command(string s,LogObserver* l);
     ~Command();
     Command(const Command& g);
     Command& operator=(const Command& g);
 };
 
 
-class CommandProcessor {
-private:
-  
-    bool ReadFromFile = false;
-    void readCommand();
+class CommandProcessor :public  ILoggable, public Subject {
+
 public:
+    bool ReadFromFile = false;
+   virtual void readCommand();
+   LogObserver* lo;
     std::vector<std::pair<std::string, std::pair<std::string, std::string>>> valid_commands_and_their_transitions_vector;
     std::vector<std::string> possible_valid_commands_vector;
     std::vector<Command*> commands_vector;
-
+    string stringToLog() override;
     int index = 0;
-    CommandProcessor();
-    Command getCommand();
+    CommandProcessor(LogObserver* lo);
+    Command* getCommand();
     std::string validate(Command*, std::string);
+    CommandProcessor();
     void saveCommand(string c);
 };
 
 
 
 
-
-
-
-
-
 class FileLineReader {
+
 public:
-    std::vector<Command*> readLineFromFile(const std::string& file_name);
+    FileLineReader();
+    std::vector<Command*> commands;
+    void readAllFile(string filename,  LogObserver* l);
+    int index = 0;
+    Command* getNextCommand(string filename, LogObserver* l);
 };
 
-class FileCommandProcessorAdapter {
-private:
-    FileLineReader flr;
-    std::vector<std::string> possible_valid_commands_vector;
+class CommandProcessorAdapter : public  CommandProcessor {
 public:
-    std::vector<Command*> readCommand(std::string);
+    FileLineReader* Fl;
+    string filename;
+    CommandProcessorAdapter();
+    CommandProcessorAdapter(FileLineReader* f,string fl,LogObserver* l);
+    void readCommand() override;
+
 };
+
+
+
+
 #endif
 
 

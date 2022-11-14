@@ -297,6 +297,13 @@ void Territory::RemoveTroops(int ter)
 
 bool Territory::isAdjacent(Territory* ter)
 {
+    std::list<Territory*>::iterator it;
+    for (it = m_Connections.begin(); it != m_Connections.end(); ++it) {
+
+        if (*ter->m_name == *(*it)->m_name) {
+            return true ;
+        }
+    }
     return false;
 }
 

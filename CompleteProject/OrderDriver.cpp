@@ -21,29 +21,5 @@ void testOrdersList() {
 
 
     //print orderlist
-    cout << "\nthe orderlist contains: " << endl;
-    for (int i = 0; i < anOrderList->get_order_list().size(); i++) {
-        cout << "  " << *((anOrderList->get_order_list().at(i))->get_type()) << endl;
-    }
 
-    //delete order
-    cout << "\ndeleting an order :" << endl;
-    anOrderList->remove(anOrderList->get_order_list().at(5));
-
-    //print orderlist
-    cout << "\nthe orderlist contains: " << endl;
-    for (int i = 0; i < (anOrderList->get_order_list()).size(); i++) {
-        cout << "  " << *((anOrderList->get_order_list().at(i))->get_type()) << endl;
-    }
-
-    //move order
-    cout << "\nmoving order with coordinates x = 1, y = 3:" << endl;
-    int coorX = 1;
-    int coorY = 3;
-    anOrderList->move(coorX, coorY);
-    //print orderlist
-    cout << "\nthe orderlist contains: " << endl;
-    for (int i = 0; i < (anOrderList->get_order_list()).size(); i++) {
-        cout << "  " << *((anOrderList->get_order_list().at(i))->get_type()) << endl;
-    }
 }

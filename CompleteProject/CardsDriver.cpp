@@ -68,11 +68,7 @@ void testCards() {
     //print out of player's list of order
     std::list<Order*>::iterator iter;
     string* s;
-    cout << endl << "Player's list of orders contains: " << endl;
-    for (iter = player1->orders.begin(); iter != player1->orders.end(); iter++) {
-        s = (*iter)->get_type();
-        cout << *s << " ";
-    }
+
 
     cout << "." << endl << "." << endl
         << "============= testCards() End ================" << endl;     

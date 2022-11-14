@@ -32,7 +32,19 @@ Card* getCard(list<Card*>* l, string card_name) {
         return nullptr; 
 }
 
-Player* getplayer(list<Player*> l, string card_name) {
+void Player::RemoveTerritory( string teri_name) {
+    std::list<Territory*>::iterator it;
+    for (it = territories.begin(); it != territories.end(); ++it) {
+
+        if (teri_name == *(*it)->m_name) {
+            territories.remove(*it);
+            return;
+        }
+    }
+
+}
+
+Player* Player::getplayer(list<Player*> l, string card_name) {
     std::list<Player*>::iterator it;
     for (it = l.begin(); it != l.end(); ++it) {
 
@@ -41,6 +53,22 @@ Player* getplayer(list<Player*> l, string card_name) {
         }
     }
     return nullptr;
+}
+std::list<Territory*> Player::getAllTerritories(list<Player*> l) {
+    std::list<Player*>::iterator it;
+    std::list<Territory*> ter;
+
+    for (it = l.begin(); it != l.end(); ++it) {
+        std::list<Territory*>::iterator itTer;
+        
+        for (itTer = (*it)->territories.begin(); itTer != (*it)->territories.end(); ++itTer)
+        ter.insert(ter.begin(), (*itTer));
+
+
+        for (itTer = Neutral->territories.begin(); itTer != Neutral->territories.end(); ++itTer)
+            ter.insert(ter.begin(), (*itTer));
+    }
+    return ter;
 }
 
 bool isNumber(const string& s)
@@ -58,8 +86,8 @@ bool Player::issueOrder() {
             cout << "Player : " << *m_name << " has " << *armies << endl;
             cout << "Possible action are  : deploy ( command :deploy territory_name nbr_army)  " << *territories.front()->m_name<< endl;
 
-            Command c = cP->getCommand();
-            string command = c.getCommand();
+             currentCommand = cP->getCommand();
+            string command = currentCommand->getCommand();
             string com = string(command.substr(0, command.find(" ")));
             string arg = string(command.substr(command.find(" ") + 1));
             string territory_name = string(arg.substr(0, arg.find(" ")));
@@ -69,9 +97,11 @@ bool Player::issueOrder() {
             if (isNumber(nbr_armies) && getTerritory(territories, territory_name)!=nullptr) {
                 int i = std::stoi(nbr_armies);
                 *deployed_inTurn = *deployed_inTurn + i;
-                orders.insert(orders.end(), new Deploy(this, i, getTerritory(territories, territory_name)));
+                orders->addOrder(new Deploy(this, i, getTerritory(territories, territory_name), currentCommand, lo));
+              
                 return true;
             }
+            currentCommand->setEffect("The command written is error either territory does not exist or armies is not digit");
             cout << "The command written is error either territory does not exist or armies is not digit" << endl;
         }
     }
@@ -98,9 +128,9 @@ bool Player::issueOrder() {
             cout << ", end (to choose not to make another turn ) ";;
 
         cout << endl;
-   
-       Command c = cP->getCommand();
-        string command=c.getCommand();
+ 
+        currentCommand = cP->getCommand();
+        string command= currentCommand->getCommand();
 
         cout << command << endl;
         string com = string(command.substr(0, command.find(" ")));
@@ -113,32 +143,33 @@ bool Player::issueOrder() {
               string nbr_armies = string(arg.substr(0, arg.find(" ")));
               string destination= string(arg.substr(arg.find(" ") + 1));
               if (com == "advance") {
-                  orders.insert(orders.end(), new Advance(this, getTerritory(territories, territory_name),std::stoi(nbr_armies), getTerritory(territories, destination)));
+                  orders->addOrder(new Advance(this, getTerritory(getAllTerritories(AllPlayers), territory_name), std::stoi(nbr_armies), getTerritory(getAllTerritories(AllPlayers), destination), currentCommand, lo));
                   return true;;
               }
               if (com == "airlift") {
-                  orders.insert(orders.end(), new Airlift(this, getTerritory(territories, territory_name),std::stoi(nbr_armies), getTerritory(territories, territory_name)));
+                  orders->addOrder(new Airlift(this, getTerritory(getAllTerritories(AllPlayers), territory_name),std::stoi(nbr_armies), getTerritory(getAllTerritories(AllPlayers), destination), currentCommand, lo));
                   return true;;
               }
         }
             if (com == "blockade") {
-                orders.insert(orders.end(), new Blockade(this, getTerritory(territories, arg)));
+                orders->addOrder(new Blockade(this, getTerritory(getAllTerritories(AllPlayers), arg), currentCommand, lo));
 
                 return true;
             }  
             if (com == "negociate") {
-                orders.insert(orders.end(), new Negotiate(this, getplayer(AllPlayers, arg)));
+                orders->addOrder(new Negotiate(this, getplayer(AllPlayers, arg), currentCommand, lo));
 
                 return true;
             }
                 if (com == "bomb") {
-                    orders.insert(orders.end(), new Bomb(this, getTerritory(territories, arg)));
+                    orders->addOrder(new Bomb(this, getTerritory(getAllTerritories(AllPlayers), arg), currentCommand, lo));
 
                     return true;;
             }
       
        
                 if (com == "end") {
+                    currentCommand->setEffect("ending the issue order phase");
                     return false;
                 }
 
@@ -148,21 +179,27 @@ bool Player::issueOrder() {
 }
 
 void Player::execDeploy() {
-    std::list<Order*>::iterator it;
-    for (it = orders.begin(); it != orders.end(); ++it) {
-        if (*(*it)->get_type() == "Deploy") {
-            (*it)->execute();     
-            orders.remove(*it);
-        }
+    std::list<Order*>::iterator it= orders->order_list.begin();
 
+    while (it != orders->order_list.cend())
+    {
+        list<Order*>::iterator curr = it++;
+        if (*(*curr)->get_type() == "deploy") {
+            (*curr)->execute();
+            orders->order_list.erase(curr);
+        }
     }
-}
+   
+        
+    }
+   
+   
 
  Player::Player(const Player& player){
      m_name = new string(*player.m_name);
      territories = list<Territory*>(player.territories);
      cards =  list<Card*>(player.cards);
-     orders = list<Order*>(player.orders);
+     orders =new  OrdersList(*player.orders);
      hand = new Hand(*(player.hand));
 
 }
@@ -172,7 +209,7 @@ Player::Player(){
     hand = new Hand();
      territories = list<Territory*>();;
      cards = list<Card*>();
-     orders= list<Order*>();
+     orders= new OrdersList();
 
 }; //default constructor
 
@@ -182,7 +219,7 @@ Player::Player(string name){
     hand = new Hand();
      territories = list<Territory*>();;
      cards = list<Card*>();
-     orders= list<Order*>();
+     orders=new  OrdersList();
 
 }; // constructor
 
@@ -199,7 +236,7 @@ Player::~Player() {
         delete *it;
         *it= nullptr;
     }
-    for (std::list<Order*>::iterator it = orders.begin(); it != orders.end(); ++it) {
+    for (std::list<Order*>::iterator it = orders->order_list.begin(); it != orders->order_list.end(); ++it) {
         delete *it;
         *it= nullptr;
     }
@@ -217,7 +254,7 @@ Player& Player::operator=(const Player &player)
     this->m_name = new string(*player.m_name);
     this-> territories = list<Territory*>(player.territories);
     this->cards =  list<Card*>(player.cards);
-    this->orders = list<Order*>(player.orders);
+    this->orders =orders;
     this->hand = new Hand(*(player.hand));
    return *this;};
 

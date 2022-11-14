@@ -23,10 +23,16 @@ Player* getPlayer(list<Player*> lt, int name) {
     return nullptr;
 
 }
+string GameEngine::stringToLog()
+{
+    return logging;
+}
 // constructor
 GameEngine::GameEngine()
 {
-    Cp = new CommandProcessor();
+    lo = new LogObserver();
+    Attach(lo);
+    Cp = new CommandProcessorAdapter(new FileLineReader(),"C:\\Users\\bechr\\Documents\\GitHub\\COMP345-WarzoneProject\\all\\working\\1.txt",lo);
     State* start = new State("start");
     current_state = start;
     State* maploaded = new State("maploaded");
@@ -38,6 +44,7 @@ GameEngine::GameEngine()
     State* executeorders = new State("executeorders");
     State* win = new State("win");
     deck = new Deck(50);
+    NeutralPlayer = new Player("NEUTRAL");
 // insert the possible commands in a list corresponding to each of the states
     start->addpossible_action("loadmap", "", "");
 
@@ -184,47 +191,73 @@ string  GameEngine::transition(string com, string arg)
         string problem = "";
         if (arg == com) {
             problem = "player name empty";
+
+            currentCommand->setEffect("player name empty cannot add him");
             return problem;
         }
         if ((all_players).size() == 6) {
+
+            currentCommand->setEffect("Maximum number of player reached cant add more player");
             return "Maximum number of player reached cant add more player";
         }
 
         problem = add_player(arg);
 
         if (problem == "") {
+            logging = "playersadded still staying in this state";
+            Notify(this);
             current_state = getstate("playersadded");
+            currentCommand->setEffect("Player : " + arg + " was added! \n");
             return "Player : " + arg + " was added! \n";
         }
-        else
+        else {
+
+            currentCommand->setEffect("Player cannot be added  : " + problem + "!\n");
+
             return "Player cannot be added  : " + problem + "!\n";
+        }
     }
 
     else if (com == "loadmap") {
         // load map with arg as the path
         // check if the maps was loaded or it failed :
         if (arg == com) {
+
+            currentCommand->setEffect("Map path  is empty \n");
             return "Map path  is empty \n";
         }
         string problem = loadmap(arg);//will change with the problem from the map
 
         if (problem == "") {
+            logging = "map was loaded  going to state map loaded";
+            Notify(this);
             current_state = getstate("maploaded");
+            currentCommand->setEffect("map  : " + arg + " was loaded! \n");
             return "map  : " + arg + " was loaded! \n";
         }
-        else
+        else {
+            currentCommand->setEffect("Map with path " + arg + " does not exist : " + problem + " \n");
+
             return "Map with path " + arg + " does not exist : " + problem + " \n";
+        }
     }
 
     else if (com == "validatemap") {
         string problem = "";//will change with the return of the validate map->validate()
         problem = map->Validate();
         if (problem == "") {
+            logging = "map was validated  going to state addplayer";
+            Notify(this);
             current_state = getstate("mapvalidated");
+            currentCommand->setEffect("map  : " + arg/*map->m_name*/ + " is  valid! \n");
+
             return "map  : " + arg/*map->m_name*/ + " is  valid! \n";
         }
-        else
+        else {
+            currentCommand->setEffect("Map with path " + arg + " has the following problem :  " + problem + " \n");
+
             return "Map with path " + arg + " has the following problem :  " + problem + " \n";
+        }
     }
 
 
@@ -235,14 +268,23 @@ string  GameEngine::transition(string com, string arg)
 
 
         if (all_players.size() < 2) {
+            currentCommand->setEffect("cannot start game there is not enough players : \n");
+
             return "cannot start game there is not enough players : \n";
         }
 
         string problem = Gamestart();
         if (problem != "") {
+
+            currentCommand->setEffect("failed to  assign territories : " + problem + '\n');
+
             return "failed to  assign territories : " + problem + '\n';
         }
+        logging = "going to state gamestart ";
+        Notify(this);
         current_state = getstate("gamestart");
+        currentCommand->setEffect("\nTHE GAME HAS STARTED :\n");
+
         return "\nTHE GAME HAS STARTED :\n";
     }
 
@@ -254,7 +296,6 @@ string GameEngine::issueOrderPhase() {
         for (int i = 1; i < all_players.size() + 1; i++) {
             ;
             Player* p = getPlayer(all_players, i);
-            cout << "\n Player :" << *p->m_name << "   issuing orders " << endl;
             bool val = p->issueOrder();
            end= end || !val;
         }
@@ -269,24 +310,27 @@ string GameEngine::executeOrderPhase() {
     for (int i = 1; i < all_players.size() + 1; i++) {
         ;
         Player* p = getPlayer(all_players, i);
-        cout << "\n Player :" << *p->m_name << "  executing order " << endl;
+        cout << "\n Player :" << *p->m_name << "  executing Deploy order " << endl;
         p->execDeploy();
     }
+    int ordercount = 0;
     while (true) {
-   
+        int all_orders = 0;
         for (int i = 1; i < all_players.size() + 1; i++) {
-            int all_orders = 0;
+
             Player* p = getPlayer(all_players, i);
-            cout << "\n Player :" << *p->m_name << "  executing order " << endl;
-            if (p->orders.size() != 0) {
-                p->orders.front()->execute();
-                p->orders.remove(p->orders.front());
-                all_orders += p->orders.size();
+            cout << "\n Player :" << *p->m_name << "  executing order " << ordercount << endl;
+            if (p->orders->order_list.size() != 0) {
+                p->orders->order_list.front()->execute();
+                p->orders->order_list.erase(p->orders->order_list.begin());
+                all_orders += p->orders->order_list.size();
             }
-            if (all_orders == 0) {
-                break;
-            }
+
         }
+        if (all_orders == 0) {
+                break;
+        }
+        ordercount++;
     }
     return "";
 }
@@ -297,27 +341,34 @@ string  GameEngine::transitionInGame(string com, string arg){
     // REMOOOVE  // REMOOOVE 
     ///ISSUE ORDER 
 
-     if (com == "issueorder") {
-   
+     if (*current_state->name == "issueorders") {
+
+         currentCommand->setEffect("start issueorder phase");
+
         string problem =issueOrderPhase();;
         string final = ""; // will be filled later when adding orders
         if (problem == "") {
+            logging = "going to state finished issuing orders going in state executeorder ";
+            Notify(this);
             current_state = getstate("executeorders");
             return "orders issued : "  + '\n';
         }
-        else
+        else {
+            currentCommand->setEffect("failed start issueorder phase");
+
             return "failed to  issued orders : " + problem + "\n";
-
-    }
-    else if (com == "endissueorders") {
-        current_state = getstate("executeorders");
-        return "ending orders issued :\n";
+        }
     }
 
-    else if (com == "execorder") {
+
+    else if (*current_state->name == "executeorders") {
+         currentCommand->setEffect(" start execute order phase");
+
         string problem = executeOrderPhase();
 
         if (problem == "") {
+            logging = "going to state finished executing orders going in state assignreinforcement ";
+            Notify(this);
             current_state = getstate("assignreinforcement");
             return "orders executed : \n";
         }
@@ -325,16 +376,24 @@ string  GameEngine::transitionInGame(string com, string arg){
             return "failed to  execute orders : " + problem + "\n";
     }
 
-    else if (com == "win") {
+    else if (*current_state->name == "win") {
+         logging = "going to state win ";
+         Notify(this);
         current_state = getstate("win");
         return /*player name */ "won the game : \n"/*game resume */ ;
     }
 
     else if (com == "play") {
+                  logging = "going to state play ";
+         Notify(this);
         current_state = getstate("start");
+        currentCommand->setEffect(" started another game");
+
         return "Starting the game againt\n";
     }
     else if (com == "end") {
+         currentCommand->setEffect(" ended another game");
+
         current_state = getstate("end");
         return "end";//
     }
@@ -380,13 +439,13 @@ void GameEngine::StartupPhase() {
         cout << "current state is : " + *current_state->name << endl;
         cout << "possible actions are : " + listPossibilities() << endl;
   
-      Command command =Cp->getCommand();
+      currentCommand =Cp->getCommand();
 
 
         string com, arg;
-        com = string(command.getCommand().substr(0, command.getCommand().find(" ")));
+        com = string(currentCommand->getCommand().substr(0, currentCommand->getCommand().find(" ")));
 
-        arg = command.getCommand().substr(command.getCommand().find(" ") + 1);
+        arg = currentCommand->getCommand().substr(currentCommand->getCommand().find(" ") + 1);
         if (!check_command(com)) {
             cout << "INVALID COMMAND \n";
         }
@@ -394,10 +453,13 @@ void GameEngine::StartupPhase() {
             message = transition(com, arg);
             cout << message;
         }
-        if (*(current_state->name) == "gamestart") { 
+        if (*(current_state->name) == "gamestart") {
+            
             for (int i = 1; i < all_players.size() + 1; i++) {
                 Player* p = getPlayer(all_players, i);
                 p->AllPlayers = all_players;
+                p->Neutral = NeutralPlayer;
+                p->lo = lo;
             }
             return; }
     }
@@ -419,13 +481,16 @@ void GameEngine::endTurnPhase() {
     for (int i = 1; i < all_players.size() + 1; i++) {
         Player* p = getPlayer(all_players, i);
         p->CannotAttack.clear();
+        p->Territory_to_attack.clear();
+        p->Territory_to_defend.clear();
+   
         p->hand->addCardHand(deck->draw());
         if (p->recieve_card) {
             p->hand->addCardHand(deck->draw());
             p->recieve_card = false;
         }
         p->deployed_inTurn =new int(0);
-        p->orders.clear();
+        p->orders->order_list.clear();
 
     }
 }
@@ -468,24 +533,16 @@ void GameEngine::mainGameLoop() {
         }
 
         string message = "";
-
-
-
         cout << "current state is : " + *current_state->name << endl;
-        cout << "possible actions are : " + listPossibilities() << endl;
-        Command command = Cp->getCommand();
-      //  Cp->getCommand();
+         currentCommand = Cp->getCommand();
         string com, arg;
-        com = string(command.getCommand().substr(0, command.getCommand().find(" ")));
+        com = string(currentCommand->getCommand().substr(0, currentCommand->getCommand().find(" ")));
 
-        arg = command.getCommand().substr(command.getCommand().find(" ") + 1);
-        if (!check_command(com)) {
-            cout << "INVALID COMMAND \n";
-        }
-        else {
+        arg = currentCommand->getCommand().substr(currentCommand->getCommand().find(" ") + 1);
+  
             message = transitionInGame(com, arg);
             cout << message;
-        }
+        
         if ((message) == "end") { return; }
     }
 }
@@ -497,12 +554,12 @@ void GameEngine::manage()
 
         cout << "current state is : " + *current_state->name<<endl;
         cout << "possible actions are : " + listPossibilities() << endl;
-        Command command = Cp->getCommand();
+         currentCommand = Cp->getCommand();
 
         string com, arg;
-        com = string(command.getCommand().substr(0, command.getCommand().find(" ")));
+        com = string(currentCommand->getCommand().substr(0, currentCommand->getCommand().find(" ")));
 
-        arg = command.getCommand().substr(command.getCommand().find(" ") + 1);
+        arg = currentCommand->getCommand().substr(currentCommand->getCommand().find(" ") + 1);
         if (!check_command(com)) {
             cout << "INVALID COMMAND \n";
         }

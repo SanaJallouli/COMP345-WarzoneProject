@@ -152,7 +152,7 @@ Deck::Deck(int size){
     int type = 0;
     srand(time(0)); //seed rand with the current time
     for (int i = 0; i < size; i++) {
-        type = (rand() % 5) + 1; //random number 1 to 5
+        type = ((1+i) /*rand()*/ % 5) + 1; //random number 1 to 5
         switch (type) {
         case 1:
             pDeckV->at(i) = pCard1;
@@ -392,7 +392,7 @@ Hand::Hand(const Hand& h) {
          }
          //only create orders for bomb, blockade, airlift and negotiate (diplomacy card)
          if (type > 1 && type < 6) {
-             p->orders.push_back(order); //add to player's list of orders
+             p->orders->order_list.push_back(order); //add to player's list of orders
              cout << "order " << *order->get_type() << " created, added to player's orders." << endl;
          }
          d->addCardDeck(card);//add card to deck

@@ -9,13 +9,15 @@
 
 using namespace std ;
 class State;
-class GameEngine {
+class GameEngine : public ILoggable, public Subject {
 public:
     CommandProcessor* Cp;
+    string logging;    string stringToLog() override;
     GameEngine(); // constructor
     ~GameEngine(); // distractor
     Map* map;
     Deck* deck;
+    Command* currentCommand;
 // list of all potential commands
     std::list<string*> command_list;
 //list of all potenetial states
@@ -23,7 +25,7 @@ public:
     std::list<Player*> all_players;
 // the current state of the game
     State* current_state;
-    
+    Player* NeutralPlayer;
     //return the state based on the command entered by user
     State* getstate(string name);
     string loadmap(string s);
@@ -47,7 +49,7 @@ public:
     string reinforcementPhase();
     // handle the transition from state to state depending on the commande
     string transition(string com, string arg);
-    
+    LogObserver* lo;
     //cout operator
     friend ostream& operator<<(ostream& strm, const GameEngine& engine);
     
