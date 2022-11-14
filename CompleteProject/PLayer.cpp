@@ -87,6 +87,8 @@ bool Player::issueOrder() {
             cout << "Possible action are  : deploy ( command :deploy territory_name nbr_army)  " << *territories.front()->m_name<< endl;
 
              currentCommand = cP->getCommand();
+             if (currentCommand->getCommand() == "nullptr")
+                 return false ;
             string command = currentCommand->getCommand();
             string com = string(command.substr(0, command.find(" ")));
             string arg = string(command.substr(command.find(" ") + 1));
@@ -130,6 +132,8 @@ bool Player::issueOrder() {
         cout << endl;
  
         currentCommand = cP->getCommand();
+        if (currentCommand->getCommand() == "nullptr")
+            return false;
         string command= currentCommand->getCommand();
 
         cout << command << endl;

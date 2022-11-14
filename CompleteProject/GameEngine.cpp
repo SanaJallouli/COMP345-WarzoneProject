@@ -28,6 +28,64 @@ string GameEngine::stringToLog()
     return logging;
 }
 // constructor
+GameEngine::GameEngine(bool fromfile)
+{
+    lo = new LogObserver();
+    Attach(lo);
+    if (fromfile)
+    Cp = new CommandProcessorAdapter(new FileLineReader(), "C:\\Users\\bechr\\Documents\\GitHub\\COMP345-WarzoneProject\\all\\working\\1.txt", lo);
+    else 
+        Cp = new CommandProcessor( lo);
+
+    State* start = new State("start");
+    current_state = start;
+    State* maploaded = new State("maploaded");
+    State* mapvalidated = new State("mapvalidated");
+    State* playersadded = new State("playersadded");
+    State* gamestart = new State("gamestart");
+    State* assignreinforcement = new State("assignreinforcement");
+    State* issueorders = new State("issueorders");
+    State* executeorders = new State("executeorders");
+    State* win = new State("win");
+    deck = new Deck(50);
+    NeutralPlayer = new Player("NEUTRAL");
+    // insert the possible commands in a list corresponding to each of the states
+    start->addpossible_action("loadmap", "", "");
+
+    maploaded->addpossible_action("loadmap", "validatemap", "");
+    mapvalidated->addpossible_action("addplayer", "", "");
+    playersadded->addpossible_action("addplayer", "gamestart", "");
+
+    gamestart->addpossible_action("", "", "");
+    assignreinforcement->addpossible_action("issueorder", "", "");
+    issueorders->addpossible_action("issueorder", "endissueorders", "");
+    executeorders->addpossible_action("execorder", "endexecorders", "win");
+    win->addpossible_action("end", "play", "");
+
+    // insert in a list the possible states achievable from each of the states
+    start->addpossible_state(maploaded, nullptr, nullptr);
+    maploaded->addpossible_state(maploaded, mapvalidated, nullptr);
+    mapvalidated->addpossible_state(playersadded, nullptr, nullptr);
+    playersadded->addpossible_state(playersadded, assignreinforcement, nullptr);
+    gamestart->addpossible_state(nullptr, nullptr, nullptr);
+
+    assignreinforcement->addpossible_state(issueorders, nullptr, nullptr);
+    issueorders->addpossible_state(issueorders, executeorders, nullptr);
+    executeorders->addpossible_state(executeorders, win, assignreinforcement);
+    win->addpossible_state(start, nullptr, nullptr);
+
+    // storing all the states
+    all_states.insert(all_states.begin(), start);
+    all_states.insert(all_states.begin(), maploaded);
+    all_states.insert(all_states.begin(), mapvalidated);
+    all_states.insert(all_states.begin(), playersadded);
+    all_states.insert(all_states.begin(), gamestart);
+    all_states.insert(all_states.begin(), assignreinforcement);
+    all_states.insert(all_states.begin(), issueorders);
+    all_states.insert(all_states.begin(), executeorders);
+    all_states.insert(all_states.begin(), win);
+
+}
 GameEngine::GameEngine()
 {
     lo = new LogObserver();
@@ -535,6 +593,8 @@ void GameEngine::mainGameLoop() {
         string message = "";
         cout << "current state is : " + *current_state->name << endl;
          currentCommand = Cp->getCommand();
+         if (currentCommand->getCommand() == "nullptr")
+             return;
         string com, arg;
         com = string(currentCommand->getCommand().substr(0, currentCommand->getCommand().find(" ")));
 
@@ -556,6 +616,8 @@ void GameEngine::manage()
         cout << "possible actions are : " + listPossibilities() << endl;
          currentCommand = Cp->getCommand();
 
+         if (currentCommand->getCommand() == "nullptr")
+             return;
         string com, arg;
         com = string(currentCommand->getCommand().substr(0, currentCommand->getCommand().find(" ")));
 

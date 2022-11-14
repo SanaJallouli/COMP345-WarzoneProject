@@ -203,6 +203,16 @@ ostream& operator<<(ostream& strm, const Advance& a) {
          cout << "Cannot execute order Advance from player :" << *owner->m_name << " as player does not own territory : " << *src->m_name << endl;
          return false;
      }
+     Player* attacked = owner->getplayer(owner->AllPlayers, *Desti->player_owner);
+      found = (std::find(owner->CannotAttack.begin(), owner->CannotAttack.end(), attacked) != owner->CannotAttack.end());
+
+     if (found) {
+         currentCommand->setEffect("Cannot execute order Advance from player :" + *owner->m_name + " as player is nogociating with him : " + *src->m_name);
+
+         cout << "Cannot execute order Advance from player :" + *owner->m_name + " as player is nogociating with him : " + *src->m_name << endl;
+         return false;
+     }
+
      if (!src->isAdjacent(Desti)) {
          currentCommand->setEffect("Cannot execute order Advance from player :" + *owner->m_name + " as territory : " + *src->m_name + " and Territory " + *Desti->m_name + " are not adjacent");
 
@@ -226,8 +236,9 @@ ostream& operator<<(ostream& strm, const Advance& a) {
 
      bool found = (std::find(owner->territories.begin(), owner->territories.end(), Desti) != owner->territories.end());
      if (found) {
+     
          if (getTerritory(owner->territories,*Desti->m_name) != nullptr) {
-             owner->Territory_to_attack.insert(owner->Territory_to_defend.begin(), Desti);
+             owner->Territory_to_defend.insert(owner->Territory_to_defend.begin(), Desti);
 
          }else 
              owner->Territory_to_attack.insert(owner->Territory_to_attack.begin(), Desti);
@@ -235,6 +246,10 @@ ostream& operator<<(ostream& strm, const Advance& a) {
 
          *src->armies = *src->armies - troops;
          *Desti->armies = *Desti->armies + troops;
+         logging = "exectuting the order Advance for player  " + *owner->m_name;
+         Notify(this);
+         currentCommand->setEffect("Player " + *owner->m_name + "  advanced to Territory : " + *Desti->m_name + " and moved  " + std::to_string(*Desti->armies) + " units");
+         cout << "Player " + *owner->m_name + "  advanced to Territory : " + *Desti->m_name + " and moved  " + std::to_string(*Desti->armies) + " units";
          return true;
      }
      *src->armies = *src->armies - troops;
@@ -255,10 +270,7 @@ ostream& operator<<(ostream& strm, const Advance& a) {
          return true;
      }
      else {
-         /// NEEED TO CHANGE OWNERSHIP !!!!!!!! REMOVE FROM PLAYER OTHER LIST 
 
-         // remove from other player list
-         //add it to owner list
          Player* Opponent = owner->getplayer(owner->AllPlayers, *Desti->player_owner);
 
          Opponent->RemoveTerritory(*Desti->player_owner);
@@ -556,7 +568,7 @@ Negotiate::Negotiate(const Negotiate& d) : Order(d)
 }
 
  bool Negotiate::validate() {
-     if (*owner->m_name != *Negotiated->m_name) {
+     if (*owner->m_name == *Negotiated->m_name) {
 
          cout << "Cannot execute order Negotiate from player :" << *owner->m_name << " as player cannot negociate with himself "<< endl;
          currentCommand->setEffect("Cannot execute order Negotiate from player :" + *owner->m_name + " as player cannot negociate with himself ");
@@ -579,6 +591,7 @@ Negotiate::Negotiate(const Negotiate& d) : Order(d)
      if (!validate()) {
          return false;
      }
+
      logging = "executing the order negociate for player  " + *owner->m_name;
      Notify(this);
      Negotiated->CannotAttack.insert(Negotiated->CannotAttack.begin(), owner);

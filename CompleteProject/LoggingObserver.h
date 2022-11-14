@@ -2,7 +2,8 @@
 
 #include <list>
 #include <string>
-
+#include <iostream>
+#include <fstream>
 using namespace std;
 class ILoggable  {
 public :

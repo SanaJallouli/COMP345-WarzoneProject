@@ -122,7 +122,7 @@ Command* CommandProcessor::getCommand(){
     }
     index++;
     if (index > commands_vector.size())
-        exit(0);
+        return nullptr;
     std::cout << commands_vector[index - 1]->getCommand() << endl;
     return commands_vector[index-1];
 
@@ -155,6 +155,7 @@ std::string CommandProcessor::validate(Command* command1, std::string state )
 void CommandProcessor::saveCommand(string c) {
     
     commands_vector.insert(commands_vector.end(), new Command(c,lo));
+    if(c!="nullptr")
     Notify(this);
 }
 
@@ -182,8 +183,7 @@ Command* FileLineReader::getNextCommand(string filename, LogObserver* l)
     index++;
     if (index == commands.size()) {
         cout << "There are no more commands to play the program will exit" << endl;
-        exit(1);
-        return nullptr;
+        return new Command("nullptr",l);
     }
     return commands[index - 1];
 }
@@ -196,6 +196,9 @@ CommandProcessorAdapter::CommandProcessorAdapter(FileLineReader* f,string fl,Log
 void CommandProcessorAdapter::readCommand()
 {
     string temp_str= (*Fl).getNextCommand(filename,lo)->getCommand();
+    if (temp_str == "nullptr") {
+        saveCommand(temp_str);
+    }
     string com = string(temp_str.substr(0, temp_str.find(" ")));
     if (find(possible_valid_commands_vector.begin(), possible_valid_commands_vector.end(), com) != possible_valid_commands_vector.end()) {
         saveCommand(temp_str);

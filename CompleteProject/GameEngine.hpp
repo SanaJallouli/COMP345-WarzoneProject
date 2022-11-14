@@ -13,6 +13,7 @@ class GameEngine : public ILoggable, public Subject {
 public:
     CommandProcessor* Cp;
     string logging;    string stringToLog() override;
+    GameEngine(bool fromfile);
     GameEngine(); // constructor
     ~GameEngine(); // distractor
     Map* map;

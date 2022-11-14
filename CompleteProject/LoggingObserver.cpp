@@ -31,4 +31,8 @@ void Subject::Notify(ILoggable* logit) {
 void LogObserver::Update(ILoggable* logit)
 {
 	cout<<logit->stringToLog()<<endl;
+	ofstream f;
+	f.open("example.txt",  fstream::app);
+	f << logit->stringToLog() << endl;
+	f.close();
 }
